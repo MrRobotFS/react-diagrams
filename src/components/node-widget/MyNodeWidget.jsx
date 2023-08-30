@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { PortWidget } from "@projectstorm/react-diagrams-core";
 import { FaTimes } from "react-icons/fa";
-import { ControlsBar } from "../ControlsBar"; // Ajusta la ruta según tu estructura de archivos
 
 const nodeIcons = {
   LEX: "https://stelligent.com/wp-content/uploads/2017/11/AI_AmazonLex_LARGE-1.png",
   HASH_AUDIT: "https://static-00.iconduck.com/assets.00/aws-icon-2048x2048-ptyrjxdo.png",
   LAMBDA: "https://seeklogo.com/images/A/aws-lambda-logo-AE95CFC218-seeklogo.com.png",
-  // Add more node types here as needed...
 };
 
 export const MyNodeWidget = props => {
@@ -18,22 +16,21 @@ export const MyNodeWidget = props => {
   };
 
   const handleDeleteClick = e => {
-    e.stopPropagation(); // Evitar que el clic se propague al nodo y lo seleccione nuevamente
+    e.stopPropagation();
     props.node.remove();
   };
 
   return (
-    <div className={`my-node ${isSelected ? "selected" : ""}`} onClick={handleNodeClick}>
+    <div className={`my-node ${isSelected ? "selected" : ""}`} onClick={handleNodeClick} style={isSelected ? { backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 0 5px #00f', position: 'relative' } : { position: 'relative' }}>
+      {isSelected && (
+        <button className="delete-button" onClick={handleDeleteClick} style={{ color: 'white', borderRadius: '50%', backgroundColor: 'red', border: '2px solid red', position: 'absolute', top: '-10px', right: '-10px', width: '18px', height: '18px', zIndex: 1000, padding: '0', fontSize: '12px' }}>
+          <FaTimes />
+        </button>
+      )}
       <div
         className="my-node-header-container"
-        style={{ backgroundColor: props.node.color }}
+        style={{ backgroundColor: props.node.color, display: 'flex', justifyContent: 'center' }}
       >
-        {isSelected && (
-          <button className="delete-button" onClick={handleDeleteClick}>
-            🗑️
-          </button>
-        )}
-        <div className="my-icon" />
         <div className="my-node-header-text">{props.node.name}</div>
       </div>
 
