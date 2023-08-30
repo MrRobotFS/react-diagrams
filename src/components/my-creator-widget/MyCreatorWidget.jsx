@@ -6,7 +6,6 @@ import { NodeTypeLabel } from "../node-type-label/NodeTypeLabel";
 import { DiagramCanvas } from "../DiagramCanvas";
 import { MyNodeModel } from "../MyNodeModel";
 import "./my-creator-widget.css";
-import ControlsBar from "../ControlsBar";
 
 export const MyCreatorWidget = props => {
    const [locked, setLocked] = useState(false);
