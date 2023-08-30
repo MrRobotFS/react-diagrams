@@ -6,6 +6,7 @@ import { NodeTypeLabel } from "../node-type-label/NodeTypeLabel";
 import { DiagramCanvas } from "../DiagramCanvas";
 import { MyNodeModel } from "../MyNodeModel";
 import "./my-creator-widget.css";
+import ControlsBar from "../ControlsBar";
 
 export const MyCreatorWidget = props => {
    const [locked, setLocked] = useState(false);
@@ -31,6 +32,7 @@ export const MyCreatorWidget = props => {
       diagramEngine.getModel().addNode(node);
       forceUpdate();
    };
+   
 
    const handleZoomIn = () => {
       const model = diagramEngine.getModel();
@@ -103,6 +105,7 @@ export const MyCreatorWidget = props => {
                <DiagramCanvas ref={canvasRef}>
                   <CanvasWidget engine={diagramEngine} />
                </DiagramCanvas>
+
 
                <div className="coordinates-display">
                   X: {coordinates.x}, Y: {coordinates.y}

@@ -1,0 +1,20 @@
+/* Estilo para el contenedor del ícono de eliminación */
+.delete-icon-container {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: red;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+/* Estilo para el ícono de eliminación */
+.delete-icon {
+  font-size: 12px;
+  color: white;
+}

@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { PortWidget } from "@projectstorm/react-diagrams-core";
+import { FaTimes } from "react-icons/fa";
+import { ControlsBar } from "../ControlsBar"; // Ajusta la ruta según tu estructura de archivos
 
 const nodeIcons = {
   LEX: "https://stelligent.com/wp-content/uploads/2017/11/AI_AmazonLex_LARGE-1.png",
@@ -9,12 +11,28 @@ const nodeIcons = {
 };
 
 export const MyNodeWidget = props => {
+  const [isSelected, setIsSelected] = useState(false);
+
+  const handleNodeClick = () => {
+    setIsSelected(!isSelected);
+  };
+
+  const handleDeleteClick = e => {
+    e.stopPropagation(); // Evitar que el clic se propague al nodo y lo seleccione nuevamente
+    props.node.remove();
+  };
+
   return (
-    <div className="my-node">
+    <div className={`my-node ${isSelected ? "selected" : ""}`} onClick={handleNodeClick}>
       <div
         className="my-node-header-container"
         style={{ backgroundColor: props.node.color }}
       >
+        {isSelected && (
+          <button className="delete-button" onClick={handleDeleteClick}>
+            🗑️
+          </button>
+        )}
         <div className="my-icon" />
         <div className="my-node-header-text">{props.node.name}</div>
       </div>
