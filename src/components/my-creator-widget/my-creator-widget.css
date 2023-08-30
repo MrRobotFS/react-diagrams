@@ -1,0 +1,75 @@
+.creator-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.creator-header {
+  display: flex;
+  background: #fff;
+  flex-grow: 0;
+  flex-shrink: 0;
+  color: #6a6b6b;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  padding: 10px;
+  padding-left: 30px;
+  align-items: center;
+}
+
+.creator-content {
+  display: flex;
+  flex-grow: 1;
+}
+
+.creator-content:fullscreen {
+  width: 100vw;
+  height: 100vh;
+  background: #fff;
+}
+
+.creator-layer {
+  position: relative;
+  flex-grow: 1;
+}
+
+.zoom-controls {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.zoom-controls button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.exit-fullscreen-btn {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  z-index: 3;
+}
+
+.coordinates-display {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.creator-content:fullscreen,
+.creator-content:fullscreen .creator-layer,
+.creator-content:fullscreen .DiagramCanvas,
+.creator-content:fullscreen CanvasWidget {
+    width: 100%;
+    height: 100%;
+}
+
