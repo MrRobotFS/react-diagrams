@@ -16,6 +16,8 @@ export const MyCreatorWidget = props => {
 
    const forceUpdate = React.useReducer(bool => !bool)[1];
 
+   const canvasRef = useRef(null);
+
    const onNodeDrop = event => {
       if (locked) return;
       const data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
@@ -51,16 +53,17 @@ export const MyCreatorWidget = props => {
    };
 
    const toggleFullScreen = () => {
-    if (document.fullscreenElement) {
-        document.exitFullscreen().then(() => {
+      if (document.fullscreenElement) {
+         document.exitFullscreen().then(() => {
             diagramEngine.repaintCanvas();
-        });
-    } else {
-        creatorContentRef.current.requestFullscreen().then(() => {
+         });
+      } else {
+         canvasRef.current.requestFullscreen().then(() => {
             diagramEngine.repaintCanvas();
-        });
-    }
-};
+         });
+      }
+   };
+
 
 
    const handleMouseMove = (e) => {
@@ -97,9 +100,10 @@ export const MyCreatorWidget = props => {
                   event.preventDefault();
                }}
             >
-               <DiagramCanvas>
+               <DiagramCanvas ref={canvasRef}>
                   <CanvasWidget engine={diagramEngine} />
                </DiagramCanvas>
+
                <div className="coordinates-display">
                   X: {coordinates.x}, Y: {coordinates.y}
                </div>

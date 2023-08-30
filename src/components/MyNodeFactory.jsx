@@ -4,15 +4,16 @@ import { MyNodeWidget } from "./MyNodeWidget";
 
 export class MyNodeFactory extends AbstractReactFactory {
   constructor(handleElementSelect) {
-    super("my-node");
-    this.handleElementSelect = handleElementSelect;
+      super("my-node");
+      this.handleElementSelect = handleElementSelect;
   }
 
   generateModel(event) {
-    return new MyNodeModel();
+      return new MyNodeModel();
   }
 
   generateReactWidget(event) {
-    return <MyNodeWidget node={event.model} handleElementSelect={this.handleElementSelect} />;
+      return <MyNodeWidget node={event.model} handleElementSelect={this.handleElementSelect} selectedItems={this.selectedItems} />;
   }
 }
+

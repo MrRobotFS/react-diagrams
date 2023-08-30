@@ -44,13 +44,14 @@ export const Container = styled.div`
 `;
 
 
-export const DiagramCanvas = props => {
+export const DiagramCanvas = React.forwardRef((props, ref) => {
   return (
     <Container
+      ref={ref}
       background={props.background || "#fff"}
       color={props.color || "#f2f2f2"}
     >
       {props.children}
     </Container>
   );
-};
+});
