@@ -3,20 +3,20 @@ import { AbstractReactFactory } from "@projectstorm/react-canvas-core";
 import { MyNodeModel } from "./MyNodeModel";
 import { MyNodeWidget } from "./node-widget/MyNodeWidget";
 
-console.log("Nodes Factory")
+console.log("Calling MyNodeFactory component");
 export class NodesFactory extends AbstractReactFactory {
   constructor() {
-    console.log("Constructor Nodes Factory")
     super("my-node");
+    console.log("MyNodeFactory created");
   }
 
   generateModel(initialConfig) {
-    console.log("Model Nodes Factory")
+    console.log("Generating MyNodeModel");
     return new MyNodeModel();
   }
 
   generateReactWidget(event) {
-    console.log("Widget Nodes Factory")
+    console.log("Generating MyNodeWidget");
     return <MyNodeWidget engine={this.engine} node={event.model} />;
   }
 }

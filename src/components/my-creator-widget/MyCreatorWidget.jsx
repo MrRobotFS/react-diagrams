@@ -32,7 +32,6 @@ export const MyCreatorWidget = props => {
       forceUpdate();
    };
    
-
    const handleZoomIn = () => {
       const model = diagramEngine.getModel();
       const newZoom = model.getZoomLevel() * 1.1;
@@ -64,8 +63,6 @@ export const MyCreatorWidget = props => {
          });
       }
    };
-
-
 
    const handleMouseMove = (e) => {
       setCoordinates({ x: e.clientX, y: e.clientY });
