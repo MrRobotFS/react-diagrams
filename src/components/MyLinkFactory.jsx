@@ -1,12 +1,13 @@
-// MyLinkFactory.jsx
-import * as React from 'react';
-import { DefaultLinkFactory } from '@projectstorm/react-diagrams';
+import React from "react";
+import { AbstractReactFactory } from '@projectstorm/react-diagrams';
 import { MyLinkModel } from './MyLinkModel';
-import { MyLinkWidget } from './MyLinkWidget';
+import {MyLinkWidget} from './MyLinkWidget';
 
-export class MyLinkFactory extends DefaultLinkFactory {
+console.log("Calling MyLinkFactory component");
+export class MyLinkFactory extends AbstractReactFactory {
     constructor() {
         super('my-link');
+        console.log("MyLinkFactory created");
     }
 
     generateModel(initialConfig) {
