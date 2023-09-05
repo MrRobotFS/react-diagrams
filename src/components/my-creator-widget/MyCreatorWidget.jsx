@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { CanvasWidget } from "@projectstorm/react-canvas-core";
 import { NodesTypesContainer } from "../nodes-types-container/NodesTypesContainer";
@@ -31,7 +31,7 @@ export const MyCreatorWidget = props => {
       diagramEngine.getModel().addNode(node);
       forceUpdate();
    };
-   
+
    const handleZoomIn = () => {
       const model = diagramEngine.getModel();
       const newZoom = model.getZoomLevel() * 1.1;
@@ -71,33 +71,38 @@ export const MyCreatorWidget = props => {
    const addArrowsToConnectedNodes = () => {
       let inPorts = document.querySelectorAll('.left-port .my-port');
       let paths = document.querySelectorAll('svg .css-ve2mk5');
-  
+
       inPorts.forEach(port => {
-          let portRect = port.getBoundingClientRect();
-  
-          for (let path of paths) {
-              let pathRect = path.getBoundingClientRect();
-  
-              if (portRect.right > pathRect.left && portRect.left < pathRect.right &&
-                  portRect.bottom > pathRect.top && portRect.top < pathRect.bottom) {
-                  
-                  let svgElem = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                  svgElem.setAttribute("width", "25");
-                  svgElem.setAttribute("height", "25");
-                  svgElem.setAttribute("viewBox", "0 0 10 10");
-  
-                  let pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                  pathElem.setAttribute("d", "M0 0 L10 5 L0 10 L2 5 Z");
-                  pathElem.setAttribute("fill", "gray");
-  
-                  svgElem.appendChild(pathElem);
-                  port.appendChild(svgElem);
-  
-                  break;
-              }
-          }
+         const existingArrow = port.querySelector("svg");
+         if (existingArrow) {
+            port.removeChild(existingArrow);
+         }
+
+         let portRect = port.getBoundingClientRect();
+
+         for (let path of paths) {
+            let pathRect = path.getBoundingClientRect();
+
+            if (portRect.right > pathRect.left && portRect.left < pathRect.right &&
+               portRect.bottom > pathRect.top && portRect.top < pathRect.bottom) {
+
+               let svgElem = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+               svgElem.setAttribute("width", "25");
+               svgElem.setAttribute("height", "25");
+               svgElem.setAttribute("viewBox", "0 0 10 10");
+
+               let pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
+               pathElem.setAttribute("d", "M0 0 L10 5 L0 10 L2 5 Z");
+               pathElem.setAttribute("fill", "gray");
+
+               svgElem.appendChild(pathElem);
+               port.appendChild(svgElem);
+
+               break;
+            }
+         }
       });
-  
+
       let style = document.createElement('style');
       style.innerHTML = `
           .left-port .my-port {
@@ -111,7 +116,37 @@ export const MyCreatorWidget = props => {
           }
       `;
       document.head.appendChild(style);
-  };
+   };
+
+   useEffect(() => {
+      const handleKeyDown = (event) => {
+         if (event.key === "Delete") { // La tecla "supr" se identifica como "Delete" en el objeto event.
+            addArrowsToConnectedNodes();
+         }
+      };
+
+      const handleDeleteButtonClick = () => {
+         addArrowsToConnectedNodes();
+      };
+
+      // Agregar el listener al objeto window.
+      window.addEventListener("keydown", handleKeyDown);
+
+      // Agregar el listener al botón "delete-button".
+      const deleteButton = document.querySelector(".delete-button");
+      if (deleteButton) {
+         deleteButton.addEventListener("click", handleDeleteButtonClick);
+      }
+
+      return () => {
+         // Limpiar listeners cuando el componente se desmonta.
+         window.removeEventListener("keydown", handleKeyDown);
+         if (deleteButton) {
+            deleteButton.removeEventListener("click", handleDeleteButtonClick);
+         }
+      };
+   }, []);
+
 
    return (
       <div className="creator-body">
