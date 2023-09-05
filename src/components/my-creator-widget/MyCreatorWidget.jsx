@@ -105,17 +105,21 @@ export const MyCreatorWidget = props => {
 
       let style = document.createElement('style');
       style.innerHTML = `
-          .left-port .my-port {
-              position: relative;
-          }
-          .left-port .my-port svg {
-              position: absolute;
-              left: -20px;
-              top: -5px;
-              z-index: 3;
-          }
-      `;
+      .left-port .my-port {
+         position: relative;
+      }
+      .left-port .my-port svg {
+         position: absolute;
+         left: -20px;
+         top: -5px;
+         z-index: 3;
+      }
+      svg .css-ve2mk5 {
+         z-index: 1;
+      }
+   `;
       document.head.appendChild(style);
+
    };
 
    useEffect(() => {
