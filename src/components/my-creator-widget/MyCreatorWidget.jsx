@@ -68,6 +68,51 @@ export const MyCreatorWidget = props => {
       setCoordinates({ x: e.clientX, y: e.clientY });
    };
 
+   const addArrowsToConnectedNodes = () => {
+      let inPorts = document.querySelectorAll('.left-port .my-port');
+      let paths = document.querySelectorAll('svg .css-ve2mk5');
+  
+      inPorts.forEach(port => {
+          let portRect = port.getBoundingClientRect();
+  
+          for (let path of paths) {
+              let pathRect = path.getBoundingClientRect();
+  
+              if (portRect.right > pathRect.left && portRect.left < pathRect.right &&
+                  portRect.bottom > pathRect.top && portRect.top < pathRect.bottom) {
+                  
+                  let svgElem = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                  svgElem.setAttribute("width", "25");
+                  svgElem.setAttribute("height", "25");
+                  svgElem.setAttribute("viewBox", "0 0 10 10");
+  
+                  let pathElem = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                  pathElem.setAttribute("d", "M0 0 L10 5 L0 10 L2 5 Z");
+                  pathElem.setAttribute("fill", "gray");
+  
+                  svgElem.appendChild(pathElem);
+                  port.appendChild(svgElem);
+  
+                  break;
+              }
+          }
+      });
+  
+      let style = document.createElement('style');
+      style.innerHTML = `
+          .left-port .my-port {
+              position: relative;
+          }
+          .left-port .my-port svg {
+              position: absolute;
+              left: -20px;
+              top: -5px;
+              z-index: 3;
+          }
+      `;
+      document.head.appendChild(style);
+  };
+
    return (
       <div className="creator-body">
          <header className="creator-header">
@@ -97,6 +142,7 @@ export const MyCreatorWidget = props => {
                onDragOver={event => {
                   event.preventDefault();
                }}
+               onMouseUp={addArrowsToConnectedNodes}
             >
                <DiagramCanvas ref={canvasRef}>
                   <CanvasWidget engine={diagramEngine} />
