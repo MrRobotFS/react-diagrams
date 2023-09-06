@@ -13,6 +13,10 @@ export const MyCreatorWidget = props => {
    const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
    const diagramEngine = props.engine;
    const creatorContentRef = useRef(null);
+   const [history, setHistory] = useState([]);
+   const [currentHistoryIndex, setCurrentHistoryIndex] = useState(-1);
+
+
 
    const forceUpdate = React.useReducer(bool => !bool)[1];
 
@@ -151,6 +155,72 @@ export const MyCreatorWidget = props => {
       };
    }, []);
 
+   useEffect(() => {
+      const listener = diagramEngine.getModel().registerListener({
+         eventDidFire: (e) => {
+            console.log('Evento detectado:', e.function);
+            if (e.function === "entityRemoved" || e.function === "entityAdded" || e.function === "nodesUpdated" || e.function === "linksUpdated") {
+               setHistory(prevHistory => {
+                  const newHistory = [...prevHistory];
+                  newHistory.splice(currentHistoryIndex + 1);
+                  newHistory.push(diagramEngine.getModel().serialize());
+                  console.log('Historial después del cambio:', newHistory);
+                  return newHistory;
+               });
+               setCurrentHistoryIndex(prevIndex => {
+                  const newIndex = prevIndex + 1;
+                  console.log('Actualizando índice de historial a:', newIndex);
+                  return newIndex;
+               });
+            }
+         }
+      });
+
+      return () => {
+         listener.deregister();
+      }
+   }, [diagramEngine, currentHistoryIndex]);
+
+
+   const handleUndo = () => {
+      console.log('Función UNDO llamada.');
+      console.log('currentHistoryIndex:', currentHistoryIndex, 'history.length:', history.length);
+      if (currentHistoryIndex <= 0) {
+         console.log('No se puede realizar UNDO: ya estás en el inicio del historial.');
+         return;
+      }
+      const previousModel = history[currentHistoryIndex - 1];
+      diagramEngine.getModel().deserializeModel(previousModel, diagramEngine);
+      diagramEngine.repaintCanvas();
+      setCurrentHistoryIndex(prevIndex => {
+         console.log('Nuevo índice de historial después de UNDO:', prevIndex - 1);
+         return prevIndex - 1;
+      });
+   };
+
+   const handleRedo = () => {
+      console.log('Función REDO llamada.');
+      console.log('currentHistoryIndex:', currentHistoryIndex, 'history.length:', history.length);
+      if (currentHistoryIndex >= history.length - 1) {
+         console.log('No se puede realizar REDO: ya estás al final del historial.');
+         return;
+      }
+      const nextModel = history[currentHistoryIndex + 1];
+      diagramEngine.getModel().deserializeModel(nextModel, diagramEngine);
+      diagramEngine.repaintCanvas();
+      setCurrentHistoryIndex(prevIndex => {
+         console.log('Nuevo índice de historial después de REDO:', prevIndex + 1);
+         return prevIndex + 1;
+      });
+   };
+
+
+   useEffect(() => {
+      setHistory([diagramEngine.getModel().serialize()]);
+      setCurrentHistoryIndex(0);
+   }, [diagramEngine]);
+
+
 
    return (
       <div className="creator-body">
@@ -166,6 +236,10 @@ export const MyCreatorWidget = props => {
             <button onClick={handleZoomIn}><FaPlus /></button>
             <button onClick={handleFocusDiagram}>Focus</button>
             <button onClick={toggleFullScreen}>Fullscreen</button>
+            <button onClick={handleUndo}>Undo</button>
+            <button onClick={handleRedo}>Redo</button>
+
+
          </div>
 
          <div className="creator-content" onMouseMove={handleMouseMove} ref={creatorContentRef}>
