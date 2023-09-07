@@ -6,6 +6,7 @@ import { NodeTypeLabel } from "../node-type-label/NodeTypeLabel";
 import { DiagramCanvas } from "../DiagramCanvas";
 import { MyNodeModel } from "../MyNodeModel";
 import "./my-creator-widget.css";
+import useUndoRedo from "../../hooks/useUndoRedo";
 
 export const MyCreatorWidget = props => {
    const [locked, setLocked] = useState(false);
@@ -13,9 +14,16 @@ export const MyCreatorWidget = props => {
    const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
    const diagramEngine = props.engine;
    const creatorContentRef = useRef(null);
-   const [history, setHistory] = useState([]);
-   const [currentHistoryIndex, setCurrentHistoryIndex] = useState(-1);
 
+   const initialDiagramState = {
+      nodes: [],
+      links: [],
+      // other properties that your diagram might have
+   };
+
+
+   // Custom hook
+   const [diagramState, setDiagramState, undo, redo, history, currentIndex] = useUndoRedo(initialDiagramState);
 
 
    const forceUpdate = React.useReducer(bool => !bool)[1];
@@ -34,6 +42,11 @@ export const MyCreatorWidget = props => {
       node.setPosition(point);
       diagramEngine.getModel().addNode(node);
       forceUpdate();
+
+      const serializedModel = diagramEngine.getModel().serialize();
+      console.log(serializedModel);  // Agregar esta línea para verificación
+      setDiagramState(serializedModel);
+
    };
 
    const handleZoomIn = () => {
@@ -155,70 +168,37 @@ export const MyCreatorWidget = props => {
       };
    }, []);
 
-   useEffect(() => {
-      const listener = diagramEngine.getModel().registerListener({
-         eventDidFire: (e) => {
-            console.log('Evento detectado:', e.function);
-            if (e.function === "entityRemoved" || e.function === "entityAdded" || e.function === "nodesUpdated" || e.function === "linksUpdated") {
-               setHistory(prevHistory => {
-                  const newHistory = [...prevHistory];
-                  newHistory.splice(currentHistoryIndex + 1);
-                  newHistory.push(diagramEngine.getModel().serialize());
-                  console.log('Historial después del cambio:', newHistory);
-                  return newHistory;
-               });
-               setCurrentHistoryIndex(prevIndex => {
-                  const newIndex = prevIndex + 1;
-                  console.log('Actualizando índice de historial a:', newIndex);
-                  return newIndex;
-               });
-            }
-         }
-      });
-
-      return () => {
-         listener.deregister();
-      }
-   }, [diagramEngine, currentHistoryIndex]);
-
+   // Cuando el diagrama cambia:
+   const handleDiagramChange = (newDiagramState) => {
+      setDiagramState(newDiagramState);
+   };
 
    const handleUndo = () => {
-      console.log('Función UNDO llamada.');
-      console.log('currentHistoryIndex:', currentHistoryIndex, 'history.length:', history.length);
-      if (currentHistoryIndex <= 0) {
-         console.log('No se puede realizar UNDO: ya estás en el inicio del historial.');
-         return;
-      }
-      const previousModel = history[currentHistoryIndex - 1];
-      diagramEngine.getModel().deserializeModel(previousModel, diagramEngine);
-      diagramEngine.repaintCanvas();
-      setCurrentHistoryIndex(prevIndex => {
-         console.log('Nuevo índice de historial después de UNDO:', prevIndex - 1);
-         return prevIndex - 1;
-      });
+      undo();
+      const newDiagramState = history[currentIndex - 1]; // Obtiene el estado anterior
+      diagramEngine.getModel().deserializeModel(newDiagramState, diagramEngine);
+      forceUpdate();
    };
-
+   
    const handleRedo = () => {
-      console.log('Función REDO llamada.');
-      console.log('currentHistoryIndex:', currentHistoryIndex, 'history.length:', history.length);
-      if (currentHistoryIndex >= history.length - 1) {
-         console.log('No se puede realizar REDO: ya estás al final del historial.');
-         return;
-      }
-      const nextModel = history[currentHistoryIndex + 1];
-      diagramEngine.getModel().deserializeModel(nextModel, diagramEngine);
-      diagramEngine.repaintCanvas();
-      setCurrentHistoryIndex(prevIndex => {
-         console.log('Nuevo índice de historial después de REDO:', prevIndex + 1);
-         return prevIndex + 1;
-      });
+      redo();
+      const newDiagramState = history[currentIndex + 1]; // Obtiene el estado siguiente
+      diagramEngine.getModel().deserializeModel(newDiagramState, diagramEngine);
+      forceUpdate();
    };
-
+   
 
    useEffect(() => {
-      setHistory([diagramEngine.getModel().serialize()]);
-      setCurrentHistoryIndex(0);
-   }, [diagramEngine]);
+      if (diagramState && (diagramState.nodes?.length > 0 || diagramState.links?.length > 0)) {
+         diagramEngine.getModel().deserializeModel(diagramState, diagramEngine);
+         forceUpdate();
+         diagramEngine.repaintCanvas();
+      }
+   }, [diagramState]);
+
+
+
+
 
 
 
