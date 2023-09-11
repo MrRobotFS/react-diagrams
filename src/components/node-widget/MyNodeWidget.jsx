@@ -22,6 +22,21 @@ export const MyNodeWidget = props => {
     props.node.remove();
   };
 
+  const showDeleteButtonForLinks = (port) => {
+    // Obtiene todos los links asociados a ese puerto
+    const associatedLinks = Object.values(port.getLinks());
+
+    // Para cada link, muestra un botón de eliminar
+    associatedLinks.forEach(link => {
+      // Aquí, por simplicidad, estoy usando un alert. Sin embargo, idealmente deberías crear un botón real en la UI.
+      const deleteConfirmed = window.confirm("¿Deseas eliminar este link?");
+      if (deleteConfirmed) {
+        link.remove();
+      }
+    });
+  };
+
+
   // Verificar si el puerto "in" tiene links conectados
   const hasInLinks = Object.keys(props.node.getPort("in").links).length > 0;
 
@@ -55,9 +70,10 @@ export const MyNodeWidget = props => {
         <div className="my-port">
           {/* Solo mostrar arrowhead si hay links en el puerto "in" */}
           {hasInLinks && (
-            <svg className="arrowhead" viewBox="0 0 20 20">
+            <svg className="arrowhead" viewBox="0 0 20 20" onClick={() => showDeleteButtonForLinks(props.node.getPort("in"))}>
               <path d="M0 0 L20 10 L0 20 L5 10 Z"></path>
             </svg>
+
           )}
         </div>
       </PortWidget>

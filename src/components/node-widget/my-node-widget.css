@@ -23,7 +23,7 @@
   height: 25px;
   position: absolute;
   top: 50%;
-  left: -10px;
+  left: -20px;
   transform: translateY(-50%);
   fill: #808080; /* Use "fill" instead of "style" to set the SVG fill color */
   z-index: 3;
