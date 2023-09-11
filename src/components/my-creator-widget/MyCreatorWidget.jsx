@@ -44,8 +44,9 @@ export const MyCreatorWidget = props => {
       forceUpdate();
 
       const serializedModel = diagramEngine.getModel().serialize();
-      console.log(serializedModel);  // Agregar esta línea para verificación
+      console.log(serializedModel);
       setDiagramState(serializedModel);
+
 
    };
 
@@ -173,20 +174,42 @@ export const MyCreatorWidget = props => {
       setDiagramState(newDiagramState);
    };
 
+   // Dentro de handleUndo y handleRedo:
    const handleUndo = () => {
       undo();
-      const newDiagramState = history[currentIndex - 1]; // Obtiene el estado anterior
-      diagramEngine.getModel().deserializeModel(newDiagramState, diagramEngine);
-      forceUpdate();
+      const newDiagramState = history[currentIndex - 1];
+      console.log("Undo state:", newDiagramState);
+
+      // Verifica si diagramEngine y el modelo son válidos antes de usar deserializeModel
+      if (diagramEngine && diagramEngine.getModel() && newDiagramState) {
+         diagramEngine.getModel().deserializeModel(newDiagramState, diagramEngine);
+         forceUpdate();
+      }
    };
-   
+
    const handleRedo = () => {
       redo();
-      const newDiagramState = history[currentIndex + 1]; // Obtiene el estado siguiente
-      diagramEngine.getModel().deserializeModel(newDiagramState, diagramEngine);
+      const newDiagramState = history[currentIndex + 1];
+      console.log("Redo state:", newDiagramState);
+
+      // Verifica si diagramEngine y el modelo son válidos antes de usar deserializeModel
+      if (diagramEngine && diagramEngine.getModel() && newDiagramState) {
+         diagramEngine.getModel().deserializeModel(newDiagramState, diagramEngine);
+         forceUpdate();
+      }
+   };
+
+
+   const restoreDiagramState = (state) => {
+      diagramEngine.setModel(null); // Elimina todos los nodos actuales
+      if (state) {
+         diagramEngine.getModel().deserializeModel(state, diagramEngine);
+      }
       forceUpdate();
    };
-   
+
+
+
 
    useEffect(() => {
       if (diagramState && (diagramState.nodes?.length > 0 || diagramState.links?.length > 0)) {
@@ -195,6 +218,7 @@ export const MyCreatorWidget = props => {
          diagramEngine.repaintCanvas();
       }
    }, [diagramState]);
+
 
 
 
