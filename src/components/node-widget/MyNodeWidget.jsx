@@ -22,6 +22,9 @@ export const MyNodeWidget = props => {
     props.node.remove();
   };
 
+  // Verificar si el puerto "in" tiene links conectados
+  const hasInLinks = Object.keys(props.node.getPort("in").links).length > 0;
+
   return (
     <div className={`my-node ${isSelected ? "selected" : ""}`} onClick={handleNodeClick} style={isSelected ? { backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 0 5px #00f', position: 'relative' } : { position: 'relative' }}>
       {isSelected && (
@@ -50,11 +53,13 @@ export const MyNodeWidget = props => {
         port={props.node.getPort("in")}
       >
         <div className="my-port">
-          <svg className="arrowhead" viewBox="0 0 20 20">
-            <path d="M0 0 L20 10 L0 20 L5 10 Z"></path>
-          </svg>
+          {/* Solo mostrar arrowhead si hay links en el puerto "in" */}
+          {hasInLinks && (
+            <svg className="arrowhead" viewBox="0 0 20 20">
+              <path d="M0 0 L20 10 L0 20 L5 10 Z"></path>
+            </svg>
+          )}
         </div>
-
       </PortWidget>
 
 
