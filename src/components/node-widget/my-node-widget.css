@@ -17,20 +17,14 @@
   color: #333;
 }
 
-.left-port .my-port {
-  position: relative;
-}
-
-.left-port svg.arrowhead {
-  width: 20px;
-  height: 20px;
+/* Adjust the arrowhead size and position */
+.left-port .my-port svg.arrowhead {
+  width: 25px;
+  height: 25px;
   position: absolute;
   top: 50%;
-  left: -22px;
+  left: -10px;
   transform: translateY(-50%);
-  z-index: 9999;
-}
-
-.left-port .my-port {
-  display: none;
+  fill: #808080; /* Use "fill" instead of "style" to set the SVG fill color */
+  z-index: 3;
 }

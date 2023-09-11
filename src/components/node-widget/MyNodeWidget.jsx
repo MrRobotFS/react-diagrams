@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { PortWidget } from "@projectstorm/react-diagrams-core";
 import { FaTimes } from "react-icons/fa";
 
+import "./my-node-widget.css";
+
 const nodeIcons = {
   LEX: "https://stelligent.com/wp-content/uploads/2017/11/AI_AmazonLex_LARGE-1.png",
   HASH_AUDIT: "https://static-00.iconduck.com/assets.00/aws-icon-2048x2048-ptyrjxdo.png",
@@ -48,7 +50,7 @@ export const MyNodeWidget = props => {
         port={props.node.getPort("in")}
       >
         <div className="my-port">
-          <svg className="arrowhead" viewBox="0 0 20 20" style={{ fill: '#808080' }}>
+          <svg className="arrowhead" viewBox="0 0 20 20">
             <path d="M0 0 L20 10 L0 20 L5 10 Z"></path>
           </svg>
         </div>
