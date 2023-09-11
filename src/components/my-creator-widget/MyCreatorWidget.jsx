@@ -86,6 +86,7 @@ export const MyCreatorWidget = props => {
       setCoordinates({ x: e.clientX, y: e.clientY });
    };
 
+   {/*}
    const addArrowsToConnectedNodes = () => {
       let inPorts = document.querySelectorAll('.left-port .my-port');
       let paths = document.querySelectorAll('svg .css-ve2mk5');
@@ -218,7 +219,7 @@ export const MyCreatorWidget = props => {
          diagramEngine.repaintCanvas();
       }
    }, [diagramState]);
-
+*/}
 
 
 
@@ -240,8 +241,8 @@ export const MyCreatorWidget = props => {
             <button onClick={handleZoomIn}><FaPlus /></button>
             <button onClick={handleFocusDiagram}>Focus</button>
             <button onClick={toggleFullScreen}>Fullscreen</button>
-            <button onClick={handleUndo}>Undo</button>
-            <button onClick={handleRedo}>Redo</button>
+            {/*<button onClick={handleUndo}>Undo</button>
+            <button onClick={handleRedo}>Redo</button>*/}
 
 
          </div>
@@ -253,6 +254,7 @@ export const MyCreatorWidget = props => {
                <NodeTypeLabel model={{ ports: "in" }} name="LAMBDA" />
             </NodesTypesContainer>
 
+            {/*
             <div
                className="creator-layer"
                onDrop={onNodeDrop}
@@ -260,6 +262,14 @@ export const MyCreatorWidget = props => {
                   event.preventDefault();
                }}
                onMouseUp={addArrowsToConnectedNodes}
+            >
+            */}
+            <div
+               className="creator-layer"
+               onDrop={onNodeDrop}
+               onDragOver={event => {
+                  event.preventDefault();
+               }}
             >
                <DiagramCanvas ref={canvasRef}>
                   <CanvasWidget engine={diagramEngine} />

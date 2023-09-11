@@ -47,8 +47,15 @@ export const MyNodeWidget = props => {
         engine={props.engine}
         port={props.node.getPort("in")}
       >
-        <div className="my-port" />
+        <div className="my-port">
+          <svg className="arrowhead" viewBox="0 0 20 20" style={{ fill: '#808080' }}>
+            <path d="M0 0 L20 10 L0 20 L5 10 Z"></path>
+          </svg>
+        </div>
+
       </PortWidget>
+
+
 
       <PortWidget
         className="port-container right-port"
