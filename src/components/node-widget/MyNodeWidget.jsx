@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { PortWidget } from "@projectstorm/react-diagrams-core";
-import { FaTimes } from "react-icons/fa";
+import { FaTimes, FaArrowsAltH } from "react-icons/fa";
 import "./my-node-widget.css";
 
 const nodeIcons = {
@@ -12,6 +12,8 @@ const nodeIcons = {
 export const MyNodeWidget = props => {
   const [selectionState, setSelectionState] = useState('none');
   const [selectedLinks, setSelectedLinks] = useState([]);
+  const [showOutArrowhead, setShowOutArrowhead] = useState(false);
+  const [hasOutLinks, setHasOutLinks] = useState(Object.keys(props.node.getPort("out").links).length > 0);
   const nodeRef = useRef(null);
 
 
@@ -23,7 +25,11 @@ export const MyNodeWidget = props => {
   const handleDeleteNodeClick = e => {
     e.stopPropagation();
     props.node.remove();
+
+    // Update the arrowhead state when the node is deleted
+    setShowOutArrowhead(false);
   };
+
 
   const showDeleteButtonsForLinks = (port, e) => {
     e.stopPropagation();
@@ -35,9 +41,13 @@ export const MyNodeWidget = props => {
     e.stopPropagation();
     link.remove();
     setSelectedLinks(prevLinks => prevLinks.filter(l => l.getID() !== link.getID()));
+
     if (selectedLinks.length === 1) {
       setSelectionState('none');
     }
+
+    // Check if there are links in the out port and update state
+    setHasOutLinks(Object.keys(props.node.getPort("out").links).length > 0);
   };
 
   const hasInLinks = Object.keys(props.node.getPort("in").links).length > 0;
@@ -65,6 +75,27 @@ export const MyNodeWidget = props => {
     }
   };
 
+  const handleToggleOutArrowhead = e => {
+    e.stopPropagation();
+    setShowOutArrowhead(!showOutArrowhead);
+
+    // Check if there are links in the out port and update state
+    setHasOutLinks(Object.keys(props.node.getPort("out").links).length > 0);
+  };
+
+  useEffect(() => {
+    // Check if there are links in the out port
+    const hasLinks = Object.keys(props.node.getPort("out").links).length > 0;
+
+    // If there are no links, hide the arrowhead
+    if (!hasLinks) {
+      setShowOutArrowhead(false);
+    }
+
+    // Update the hasOutLinks state
+    setHasOutLinks(hasLinks);
+  }, [props.node]);
+
 
   return (
     <div
@@ -78,18 +109,32 @@ export const MyNodeWidget = props => {
       } : { position: 'relative' }}
     >
       {selectionState === 'node' && (
-        <button
-          className="delete-button"
-          onClick={handleDeleteNodeClick}
-          style={{
-            color: 'white', borderRadius: '50%', backgroundColor: 'red',
-            border: '2px solid red', position: 'absolute', top: '-10px',
-            right: '-10px', width: '18px', height: '18px', zIndex: 1000,
-            padding: '0', fontSize: '12px'
-          }}
-        >
-          <FaTimes />
-        </button>
+        <div>
+          <button
+            className="toggle-arrowhead-button"
+            onClick={handleToggleOutArrowhead}
+            style={{
+              color: 'white', borderRadius: '50%', backgroundColor: 'blue',
+              border: '2px solid blue', position: 'absolute', top: '-10px',
+              right: '-40px', width: '18px', height: '18px', zIndex: 1000,
+              padding: '0', fontSize: '12px'
+            }}
+          >
+            <FaArrowsAltH />
+          </button>
+          <button
+            className="delete-button"
+            onClick={handleDeleteNodeClick}
+            style={{
+              color: 'white', borderRadius: '50%', backgroundColor: 'red',
+              border: '2px solid red', position: 'absolute', top: '-10px',
+              right: '-10px', width: '18px', height: '18px', zIndex: 1000,
+              padding: '0', fontSize: '12px'
+            }}
+          >
+            <FaTimes />
+          </button>
+        </div>
       )}
       <div
         className="my-node-header-container"
@@ -147,8 +192,16 @@ export const MyNodeWidget = props => {
         engine={props.engine}
         port={props.node.getPort("out")}
       >
-        <div className="my-port" />
+        <div className="my-port">
+          {showOutArrowhead && hasOutLinks && (
+            <svg className="arrowhead" viewBox="0 0 20 20" onClick={(e) => showDeleteButtonsForLinks(props.node.getPort("out"), e)}>
+              <path d="M20 0 L0 10 L20 20 L15 10 Z"></path>
+            </svg>
+          )}
+        </div>
       </PortWidget>
+
+
     </div>
   );
 };

@@ -25,6 +25,20 @@
   top: 50%;
   left: -20px;
   transform: translateY(-50%);
-  fill: #808080; /* Use "fill" instead of "style" to set the SVG fill color */
+  fill: #808080;
+  /* Use "fill" instead of "style" to set the SVG fill color */
+  z-index: 3;
+}
+
+/* Arrowhead for "out" port */
+.right-port .my-port svg.arrowhead {
+  width: 25px;
+  height: 25px;
+  position: absolute;
+  top: 50%;
+  right: -20px;
+  /* posicionamiento a la derecha en vez de izquierda */
+  transform: translateY(-50%);
+  fill: #808080;
   z-index: 3;
 }
