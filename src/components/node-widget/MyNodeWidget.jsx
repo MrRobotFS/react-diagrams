@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { PortWidget } from "@projectstorm/react-diagrams-core";
 import { FaTimes } from "react-icons/fa";
-
 import "./my-node-widget.css";
 
 const nodeIcons = {
@@ -11,39 +10,84 @@ const nodeIcons = {
 };
 
 export const MyNodeWidget = props => {
-  const [isSelected, setIsSelected] = useState(false);
+  const [selectionState, setSelectionState] = useState('none');
+  const [selectedLinks, setSelectedLinks] = useState([]);
+  const nodeRef = useRef(null);
+
 
   const handleNodeClick = () => {
-    setIsSelected(!isSelected);
+    setSelectionState(selectionState === 'node' ? 'none' : 'node');
+    setSelectedLinks([]);
   };
 
-  const handleDeleteClick = e => {
+  const handleDeleteNodeClick = e => {
     e.stopPropagation();
     props.node.remove();
   };
 
-  const showDeleteButtonForLinks = (port) => {
-    // Obtiene todos los links asociados a ese puerto
-    const associatedLinks = Object.values(port.getLinks());
+  const showDeleteButtonsForLinks = (port, e) => {
+    e.stopPropagation();
+    setSelectedLinks(Object.values(port.getLinks()));
+    setSelectionState('link');
+  };
 
-    // Para cada link, muestra un botón de eliminar
-    associatedLinks.forEach(link => {
-      // Aquí, por simplicidad, estoy usando un alert. Sin embargo, idealmente deberías crear un botón real en la UI.
-      const deleteConfirmed = window.confirm("¿Deseas eliminar este link?");
-      if (deleteConfirmed) {
-        link.remove();
+  const handleDeleteLinkClick = (link, e) => {
+    e.stopPropagation();
+    link.remove();
+    setSelectedLinks(prevLinks => prevLinks.filter(l => l.getID() !== link.getID()));
+    if (selectedLinks.length === 1) {
+      setSelectionState('none');
+    }
+  };
+
+  const hasInLinks = Object.keys(props.node.getPort("in").links).length > 0;
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (nodeRef.current && !nodeRef.current.contains(e.target)) {
+        setSelectionState('none');
+        setSelectedLinks([]);
       }
-    });
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const percentagePosition = [25, 50, 75];
+
+  const handleLinkHover = (link, entering) => {
+    if (entering) {
+      link.setColor('red');
+    } else {
+      // Restaura el color original del link o asigna un valor por defecto
+      link.setColor(link.originalColor || '#00f');
+    }
   };
 
 
-  // Verificar si el puerto "in" tiene links conectados
-  const hasInLinks = Object.keys(props.node.getPort("in").links).length > 0;
-
   return (
-    <div className={`my-node ${isSelected ? "selected" : ""}`} onClick={handleNodeClick} style={isSelected ? { backgroundColor: 'rgba(255, 255, 255, 0.05)', boxShadow: '0 0 5px #00f', position: 'relative' } : { position: 'relative' }}>
-      {isSelected && (
-        <button className="delete-button" onClick={handleDeleteClick} style={{ color: 'white', borderRadius: '50%', backgroundColor: 'red', border: '2px solid red', position: 'absolute', top: '-10px', right: '-10px', width: '18px', height: '18px', zIndex: 1000, padding: '0', fontSize: '12px' }}>
+    <div
+      ref={nodeRef}
+      className={`my-node ${selectionState === 'node' ? "selected" : ""}`}
+      onClick={handleNodeClick}
+      style={selectionState === 'node' ? {
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        boxShadow: '0 0 5px #00f',
+        position: 'relative'
+      } : { position: 'relative' }}
+    >
+      {selectionState === 'node' && (
+        <button
+          className="delete-button"
+          onClick={handleDeleteNodeClick}
+          style={{
+            color: 'white', borderRadius: '50%', backgroundColor: 'red',
+            border: '2px solid red', position: 'absolute', top: '-10px',
+            right: '-10px', width: '18px', height: '18px', zIndex: 1000,
+            padding: '0', fontSize: '12px'
+          }}
+        >
           <FaTimes />
         </button>
       )}
@@ -68,17 +112,35 @@ export const MyNodeWidget = props => {
         port={props.node.getPort("in")}
       >
         <div className="my-port">
-          {/* Solo mostrar arrowhead si hay links en el puerto "in" */}
           {hasInLinks && (
-            <svg className="arrowhead" viewBox="0 0 20 20" onClick={() => showDeleteButtonForLinks(props.node.getPort("in"))}>
-              <path d="M0 0 L20 10 L0 20 L5 10 Z"></path>
-            </svg>
-
+            <>
+              <svg className="arrowhead" viewBox="0 0 20 20" onClick={(e) => showDeleteButtonsForLinks(props.node.getPort("in"), e)}>
+                <path d="M0 0 L20 10 L0 20 L5 10 Z"></path>
+              </svg>
+              {
+                selectionState === 'link' && selectedLinks.map((link, index) => (
+                  <button
+                    key={link.getID()}
+                    className="delete-button"
+                    onClick={(e) => handleDeleteLinkClick(link, e)}
+                    onMouseEnter={() => handleLinkHover(link, true)}
+                    onMouseLeave={() => handleLinkHover(link, false)}
+                    style={{
+                      color: 'white', borderRadius: '50%', backgroundColor: 'red',
+                      border: '2px solid red', position: 'absolute', top: `${(25 * index) - 10}px`,
+                      right: '35px', // posición fija
+                      width: '18px', height: '18px', zIndex: 2000,
+                      padding: '0', fontSize: '12px',
+                    }}
+                  >
+                    <FaTimes />
+                  </button>
+                ))
+              }
+            </>
           )}
         </div>
       </PortWidget>
-
-
 
       <PortWidget
         className="port-container right-port"
