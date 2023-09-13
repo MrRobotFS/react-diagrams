@@ -33,21 +33,32 @@ export const MyCreatorWidget = props => {
    const onNodeDrop = event => {
       if (locked) return;
       const data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'));
-      const node = new MyNodeModel({
-         color: "#e86c24",
-         name: data.name,
-         type: data.type
-      });
       const point = diagramEngine.getRelativeMousePoint(event);
-      node.setPosition(point);
-      diagramEngine.getModel().addNode(node);
+
+      let newNode;
+      if (data.name === "text_input") {
+         // Crear un nodo de tipo "text_input"
+         newNode = new MyNodeModel({
+            color: "#e86c24",
+            name: "input_text",
+            type: "text_input",
+         });
+      } else {
+         // Crear nodos existentes (LEX, HASH_AUDIT, LAMBDA, etc.)
+         newNode = new MyNodeModel({
+            color: "#e86c24",
+            name: data.name,
+            type: data.type,
+         });
+      }
+
+      newNode.setPosition(point);
+      diagramEngine.getModel().addNode(newNode);
       forceUpdate();
 
       const serializedModel = diagramEngine.getModel().serialize();
       console.log(serializedModel);
       setDiagramState(serializedModel);
-
-
    };
 
    const handleZoomIn = () => {
@@ -252,7 +263,9 @@ export const MyCreatorWidget = props => {
                <NodeTypeLabel model={{ ports: "in" }} name="LEX" />
                <NodeTypeLabel model={{ ports: "in" }} name="HASH_AUDIT" />
                <NodeTypeLabel model={{ ports: "in" }} name="LAMBDA" />
+               <NodeTypeLabel model={{ ports: "in" }} name="text_input" /> {/* Nuevo tipo de nodo */}
             </NodesTypesContainer>
+
 
             {/*
             <div

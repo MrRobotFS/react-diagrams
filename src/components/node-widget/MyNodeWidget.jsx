@@ -132,7 +132,7 @@ export const MyNodeWidget = props => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center'
-      } : { position: 'relative' }}
+      } : { position: 'relative', textAlign: 'center' }}
     >
       {selectionState === 'node' && (
         <div>
@@ -174,22 +174,25 @@ export const MyNodeWidget = props => {
             <FaTimes />
           </button>
         </div>
+      )}{props.node.name !== "input_text" && ( // Oculta el encabezado para nodos no "input_text"
+        <div
+          className="my-node-header-container"
+          style={{ backgroundColor: props.node.color, display: 'flex', justifyContent: 'center', display: props.node.name === 'input_text' ? 'none' : 'flex' }}
+        >
+          <div className="my-node-header-text">{props.node.name}</div>
+        </div>
       )}
-      <div
-        className="my-node-header-container"
-        style={{ backgroundColor: props.node.color, display: 'flex', justifyContent: 'center' }}
-      >
-        <div className="my-node-header-text">{props.node.name}</div>
-      </div>
-
-      <img
-        src={nodeIcons[props.node.nodeType] || "fallback-image-url"}
-        alt={props.node.name}
-        width="60"
-        height="60"
-        draggable="false"
-      />
-
+      {props.node.name === "input_text" ? (
+        <p>input_text</p>
+      ) : (
+        <img
+          src={nodeIcons[props.node.nodeType] || "fallback-image-url"}
+          alt={props.node.name}
+          width="60"
+          height="60"
+          draggable="false"
+        />
+      )}
       <PortWidget
         className="port-container left-port"
         engine={props.engine}
