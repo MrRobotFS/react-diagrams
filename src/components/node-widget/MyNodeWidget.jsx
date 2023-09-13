@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { PortWidget } from "@projectstorm/react-diagrams-core";
-import { FaTimes, FaArrowsAltH } from "react-icons/fa";
+import { FaTimes, FaArrowsAltH, FaPencilAlt } from "react-icons/fa";
 import "./my-node-widget.css";
 
 const nodeIcons = {
@@ -14,7 +14,9 @@ export const MyNodeWidget = props => {
   const [selectedLinks, setSelectedLinks] = useState([]);
   const [showOutArrowhead, setShowOutArrowhead] = useState(false);
   const [hasOutLinks, setHasOutLinks] = useState(Object.keys(props.node.getPort("out").links).length > 0);
+  const [customText, setCustomText] = useState("");
   const nodeRef = useRef(null);
+  const [isEditing, setIsEditing] = useState(false);
 
 
   const handleNodeClick = () => {
@@ -96,6 +98,27 @@ export const MyNodeWidget = props => {
     setHasOutLinks(hasLinks);
   }, [props.node]);
 
+  const handleEditText = () => {
+    const newText = prompt("Introduce el texto para el nodo:");
+    setCustomText(newText);
+  };
+
+  const handleTextClick = () => {
+    if (!isEditing) {
+      setIsEditing(true);
+    }
+  };
+
+  const handleTextChange = (e) => {
+    setCustomText(e.target.value);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      setIsEditing(false);
+    }
+  };
+
 
   return (
     <div
@@ -105,11 +128,27 @@ export const MyNodeWidget = props => {
       style={selectionState === 'node' ? {
         backgroundColor: 'rgba(255, 255, 255, 0.05)',
         boxShadow: '0 0 5px #00f',
-        position: 'relative'
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
       } : { position: 'relative' }}
     >
       {selectionState === 'node' && (
         <div>
+          <button
+            className="edit-button"
+            onClick={handleEditText}
+            style={{
+              color: 'white', borderRadius: '50%', backgroundColor: '#FFA500', // Color naranja para editar
+              border: '2px solid #FFA500', position: 'absolute', top: '-10px',
+              right: '-70px', width: '18px', height: '18px', zIndex: 1000,
+              padding: '0', fontSize: '12px'
+            }}
+          >
+            <FaPencilAlt />
+          </button>
+
           <button
             className="toggle-arrowhead-button"
             onClick={handleToggleOutArrowhead}
@@ -200,6 +239,22 @@ export const MyNodeWidget = props => {
           )}
         </div>
       </PortWidget>
+      {customText !== null && (
+        <div className="custom-text-container">
+          {isEditing ? (
+            <input
+              value={customText}
+              onChange={handleTextChange}
+              onKeyPress={handleKeyPress}
+              onBlur={() => setIsEditing(false)}
+              autoFocus
+            />
+          ) : (
+            <span onClick={handleTextClick}>{customText}</span>
+          )}
+        </div>
+      )}
+
 
 
     </div>
