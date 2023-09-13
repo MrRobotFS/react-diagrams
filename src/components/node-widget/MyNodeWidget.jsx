@@ -99,9 +99,18 @@ export const MyNodeWidget = props => {
   }, [props.node]);
 
   const handleEditText = () => {
-    const newText = prompt("Introduce el texto para el nodo:");
-    setCustomText(newText);
+    if (props.node.name === "input_text") {
+      const newText = prompt("Introduce el texto para el nodo:", props.node.customText || "");
+      props.node.customText = newText;
+      setCustomText(newText);
+    } else {
+      const newText = prompt("Introduce el texto adicional para el nodo:", customText);
+      setCustomText(newText);
+    }
   };
+
+
+
 
   const handleTextClick = () => {
     if (!isEditing) {
@@ -119,20 +128,28 @@ export const MyNodeWidget = props => {
     }
   };
 
+  useEffect(() => {
+    if (props.node.name === "input_text") {
+      setCustomText(props.node.customText || "");
+    }
+  }, [props.node.customText]);
+
 
   return (
     <div
       ref={nodeRef}
       className={`my-node ${selectionState === 'node' ? "selected" : ""}`}
       onClick={handleNodeClick}
-      style={selectionState === 'node' ? {
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-        boxShadow: '0 0 5px #00f',
+      style={{
+        backgroundColor: selectionState === 'node' ? 'rgba(255, 255, 255, 0.05)' : 'transparent',
+        boxShadow: selectionState === 'node' ? '0 0 5px #00f' : 'none',
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center'
-      } : { position: 'relative', textAlign: 'center' }}
+        alignItems: 'center',
+        justifyContent: 'center', /* Agregado para asegurar centrado vertical */
+        textAlign: 'center' /* Asegura que el texto interno también esté centrado */
+      }}
     >
       {selectionState === 'node' && (
         <div>
@@ -183,16 +200,32 @@ export const MyNodeWidget = props => {
         </div>
       )}
       {props.node.name === "input_text" ? (
-        <p>input_text</p>
+        <p>{props.node.customText}</p>
       ) : (
-        <img
-          src={nodeIcons[props.node.nodeType] || "fallback-image-url"}
-          alt={props.node.name}
-          width="60"
-          height="60"
-          draggable="false"
-        />
+        <>
+          <img
+            src={nodeIcons[props.node.nodeType] || "fallback-image-url"}
+            alt={props.node.name}
+            width="60"
+            height="60"
+            draggable="false"
+          />
+          {customText && <div className="custom-text-container">
+            {isEditing ? (
+              <input
+                value={customText}
+                onChange={handleTextChange}
+                onKeyPress={handleKeyPress}
+                onBlur={() => setIsEditing(false)}
+                autoFocus
+              />
+            ) : (
+              <span onClick={handleTextClick}>{customText}</span>
+            )}
+          </div>}
+        </>
       )}
+
       <PortWidget
         className="port-container left-port"
         engine={props.engine}
@@ -242,22 +275,6 @@ export const MyNodeWidget = props => {
           )}
         </div>
       </PortWidget>
-      {customText !== null && (
-        <div className="custom-text-container">
-          {isEditing ? (
-            <input
-              value={customText}
-              onChange={handleTextChange}
-              onKeyPress={handleKeyPress}
-              onBlur={() => setIsEditing(false)}
-              autoFocus
-            />
-          ) : (
-            <span onClick={handleTextClick}>{customText}</span>
-          )}
-        </div>
-      )}
-
 
 
     </div>

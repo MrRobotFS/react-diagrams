@@ -65,3 +65,16 @@
 .custom-text-container span {
   cursor: pointer;
 }
+
+.my-node {
+  display: flex;
+  align-items: center; /* Centra el contenido verticalmente */
+  justify-content: center; /* Centra el contenido horizontalmente */
+  flex-direction: column; /* Establece la dirección de los hijos a vertical */
+}
+
+.my-node p {
+  margin: 0; /* Esto elimina cualquier margen que pueda desplazarlo */
+  text-align: center;
+  width: 100%; /* Asegura que ocupa todo el ancho del contenedor */
+}
