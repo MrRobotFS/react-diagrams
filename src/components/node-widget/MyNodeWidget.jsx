@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { PortWidget } from "@projectstorm/react-diagrams-core";
-import { FaTimes, FaArrowsAltH, FaPencilAlt } from "react-icons/fa";
+import { FaTimes, FaArrowsAltH, FaPencilAlt, FaExpand, FaExpandArrowsAlt } from "react-icons/fa";
 import "./my-node-widget.css";
 
 const nodeIcons = {
@@ -17,6 +17,11 @@ export const MyNodeWidget = props => {
   const [customText, setCustomText] = useState("");
   const nodeRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [resizing, setResizing] = useState(false);
+  const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 });
+  const [nodeSize, setNodeSize] = useState({ width: 100, height: 100 }); // puedes ajustar los valores iniciales a tus necesidades
+  const [nodePosition, setNodePosition] = useState({ top: 0, left: 0 });
+
 
 
   const handleNodeClick = () => {
@@ -134,6 +139,45 @@ export const MyNodeWidget = props => {
     }
   }, [props.node.customText]);
 
+  const startResizing = (e) => {
+    setResizing(true);
+    setInitialMousePosition({ x: e.clientX, y: e.clientY });
+  };
+
+  const stopResizing = () => {
+    setResizing(false);
+  };
+
+  const handleResizing = (e) => {
+    if (resizing) {
+      const dx = e.clientX - initialMousePosition.x;
+      const dy = e.clientY - initialMousePosition.y;
+      // Suponiendo que tienes un estado para el tamaño del nodo.
+      const newNodeSize = {
+        width: nodeSize.width + dx,
+        height: nodeSize.height + dy,
+      };
+      setNodeSize(newNodeSize);
+      setNodePosition({
+        top: nodePosition.top - dy / 2,
+        left: nodePosition.left - dx / 2,
+      });
+      setInitialMousePosition({ x: e.clientX, y: e.clientY });
+    }
+  };
+
+
+  useEffect(() => {
+    if (resizing) {
+      document.addEventListener("mousemove", handleResizing);
+      document.addEventListener("mouseup", stopResizing);
+    }
+    return () => {
+      document.removeEventListener("mousemove", handleResizing);
+      document.removeEventListener("mouseup", stopResizing);
+    };
+  }, [resizing, initialMousePosition, nodeSize]);
+
 
   return (
     <div
@@ -147,8 +191,13 @@ export const MyNodeWidget = props => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: 'center', /* Agregado para asegurar centrado vertical */
-        textAlign: 'center' /* Asegura que el texto interno también esté centrado */
+        justifyContent: 'center',
+        textAlign: 'center',
+        border: props.node.name === 'groups' ? '2px dashed black' : '2px solid black',
+        width: `${nodeSize.width}px`,
+        height: `${nodeSize.height}px`,
+        top: `${nodePosition.top}px`,
+        left: `${nodePosition.left}px`,
       }}
     >
       {selectionState === 'node' && (
@@ -157,7 +206,7 @@ export const MyNodeWidget = props => {
             className="edit-button"
             onClick={handleEditText}
             style={{
-              color: 'white', borderRadius: '50%', backgroundColor: '#FFA500', // Color naranja para editar
+              color: 'white', borderRadius: '50%', backgroundColor: '#FFA500',
               border: '2px solid #FFA500', position: 'absolute', top: '-10px',
               right: '-70px', width: '18px', height: '18px', zIndex: 1000,
               padding: '0', fontSize: '12px'
@@ -191,25 +240,52 @@ export const MyNodeWidget = props => {
             <FaTimes />
           </button>
         </div>
-      )}{props.node.name !== "input_text" && ( // Oculta el encabezado para nodos no "input_text"
+      )}
+
+      {props.node.name !== "input_text" && (
         <div
-          className="my-node-header-container"
-          style={{ backgroundColor: props.node.color, display: 'flex', justifyContent: 'center', display: props.node.name === 'input_text' ? 'none' : 'flex' }}
-        >
-          <div className="my-node-header-text">{props.node.name}</div>
+        className="my-node-header-container"
+        style={{
+          backgroundColor: props.node.color,
+          display: 'flex',
+          justifyContent: props.node.name === 'groups' ? 'flex-start' : 'left', 
+          paddingLeft: props.node.name === 'groups' ? '10px' : undefined, // Padding si es "groups" para desplazarlo desde la izquierda
+          alignItems: 'center'
+        }}
+      >
+        <div className={`my-node-header-text ${props.node.name === 'groups' ? "groups-header-text" : ""}`} style={{ color: props.node.name === 'groups' ? 'black' : undefined }}>
+          {props.node.name === 'groups' ? nodeIcons[props.node.nodeType] : props.node.name}
         </div>
+      </div>
       )}
       {props.node.name === "input_text" ? (
         <p>{props.node.customText}</p>
       ) : (
         <>
-          <img
-            src={nodeIcons[props.node.nodeType] || "fallback-image-url"}
-            alt={props.node.name}
-            width="60"
-            height="60"
-            draggable="false"
-          />
+          {props.node.name !== "groups" && (
+            <img
+              src={nodeIcons[props.node.nodeType] || "fallback-image-url"}
+              alt={props.node.name}
+              width="60"
+              height="60"
+              draggable="false"
+            />
+          )}
+          {props.node.name === "groups" && (
+            <FaExpandArrowsAlt
+              onMouseDown={startResizing}
+              style={{
+                position: 'absolute',
+                bottom: '5px',
+                right: '5px',
+                fontSize: '20px',
+                color: 'gray',
+                cursor: 'pointer'
+              }}
+            // Aquí puedes añadir un evento onClick si deseas que el icono tenga una acción
+            // onClick={handleExpandClick}
+            />
+          )}
           {customText && <div className="custom-text-container">
             {isEditing ? (
               <input
@@ -248,7 +324,7 @@ export const MyNodeWidget = props => {
                     style={{
                       color: 'white', borderRadius: '50%', backgroundColor: 'red',
                       border: '2px solid red', position: 'absolute', top: `${(25 * index) - 10}px`,
-                      right: '35px', // posición fija
+                      right: '35px',
                       width: '18px', height: '18px', zIndex: 2000,
                       padding: '0', fontSize: '12px',
                     }}
@@ -275,8 +351,7 @@ export const MyNodeWidget = props => {
           )}
         </div>
       </PortWidget>
-
-
     </div>
   );
+
 };
