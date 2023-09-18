@@ -17,7 +17,6 @@
   color: #333;
 }
 
-/* Adjust the arrowhead size and position */
 .left-port .my-port svg.arrowhead {
   width: 25px;
   height: 25px;
@@ -26,18 +25,15 @@
   left: -20px;
   transform: translateY(-50%);
   fill: #808080;
-  /* Use "fill" instead of "style" to set the SVG fill color */
   z-index: 3;
 }
 
-/* Arrowhead for "out" port */
 .right-port .my-port svg.arrowhead {
   width: 25px;
   height: 25px;
   position: absolute;
   top: 50%;
   right: -20px;
-  /* posicionamiento a la derecha en vez de izquierda */
   transform: translateY(-50%);
   fill: #808080;
   z-index: 3;
@@ -68,13 +64,20 @@
 
 .my-node {
   display: flex;
-  align-items: center; /* Centra el contenido verticalmente */
-  justify-content: center; /* Centra el contenido horizontalmente */
-  flex-direction: column; /* Establece la dirección de los hijos a vertical */
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .my-node p {
-  margin: 0; /* Esto elimina cualquier margen que pueda desplazarlo */
+  margin: 0;
   text-align: center;
-  width: 100%; /* Asegura que ocupa todo el ancho del contenedor */
+  width: 100%;
 }
+
+.in-out-node-class {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+

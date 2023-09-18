@@ -14,6 +14,9 @@ export const MyCreatorWidget = props => {
    const [coordinates, setCoordinates] = useState({ x: 0, y: 0 });
    const diagramEngine = props.engine;
    const creatorContentRef = useRef(null);
+   const [viewMode, setViewMode] = useState("canvas");
+   const [copySuccess, setCopySuccess] = useState(false);
+
 
    const initialDiagramState = {
       nodes: [],
@@ -97,6 +100,29 @@ export const MyCreatorWidget = props => {
       setCoordinates({ x: e.clientX, y: e.clientY });
    };
 
+   const toggleViewMode = (mode) => {
+      setViewMode(mode);
+   };
+
+   const handleTemplateClick = () => {
+      const serializedModel = diagramEngine.getModel().serialize();
+      console.log(serializedModel);
+      alert(JSON.stringify(serializedModel, null, 2)); // Este alert muestra el JSON con un formato indentado
+   };
+
+   const handleCopyClick = () => {
+      navigator.clipboard.writeText(JSON.stringify(diagramEngine.getModel().serialize(), null, 2))
+         .then(() => {
+            setCopySuccess(true);
+            setTimeout(() => setCopySuccess(false), 2000); // Reset after 2 seconds
+         })
+         .catch(err => {
+            console.error('Failed to copy text: ', err);
+            setCopySuccess(false);
+         });
+   };
+   
+
    return (
       <div className="creator-body">
          <header className="creator-header">
@@ -111,36 +137,64 @@ export const MyCreatorWidget = props => {
             <button onClick={handleZoomIn}><FaPlus /></button>
             <button onClick={handleFocusDiagram}>Focus</button>
             <button onClick={toggleFullScreen}>Fullscreen</button>
+            <button
+               className={viewMode === "canvas" ? "active" : ""}
+               onClick={() => toggleViewMode("canvas")}
+            >
+               Canvas
+            </button>
+            <button
+               className={viewMode === "template" ? "active" : ""}
+               onClick={() => toggleViewMode("template")}
+            >
+               Template
+            </button>
 
 
          </div>
 
          <div className="creator-content" onMouseMove={handleMouseMove} ref={creatorContentRef}>
-            <NodesTypesContainer>
-               <NodeTypeLabel model={{ ports: "in" }} name="LEX" />
-               <NodeTypeLabel model={{ ports: "in" }} name="HASH_AUDIT" />
-               <NodeTypeLabel model={{ ports: "in" }} name="LAMBDA" />
-               <NodeTypeLabel model={{ ports: "in" }} name="text_input" /> {/* Nuevo tipo de nodo */}
-               <NodeTypeLabel model={{ ports: "in" }} name="groups" /> {/* Nuevo tipo de nodo "groups" */}
-            </NodesTypesContainer>
+            {viewMode === "canvas" ? (
+               <>
+                  <NodesTypesContainer>
+                     <NodeTypeLabel model={{ ports: "in" }} name="LEX" />
+                     <NodeTypeLabel model={{ ports: "in" }} name="HASH_AUDIT" />
+                     <NodeTypeLabel model={{ ports: "in" }} name="LAMBDA" />
+                     <NodeTypeLabel model={{ ports: "in" }} name="text_input" /> {/* Nuevo tipo de nodo */}
+                     <NodeTypeLabel model={{ ports: "in" }} name="groups" /> {/* Nuevo tipo de nodo "groups" */}
+                  </NodesTypesContainer>
 
-            <div
-               className="creator-layer"
-               onDrop={onNodeDrop}
-               onDragOver={event => {
-                  event.preventDefault();
-               }}
-            >
-               <DiagramCanvas ref={canvasRef}>
-                  <CanvasWidget engine={diagramEngine} />
-               </DiagramCanvas>
+                  <div
+                     className="creator-layer"
+                     onDrop={onNodeDrop}
+                     onDragOver={event => {
+                        event.preventDefault();
+                     }}
+                  >
+                     <DiagramCanvas ref={canvasRef}>
+                        <CanvasWidget engine={diagramEngine} />
+                     </DiagramCanvas>
 
 
-               <div className="coordinates-display">
-                  X: {coordinates.x}, Y: {coordinates.y}
-               </div>
-            </div>
+                     <div className="coordinates-display">
+                        X: {coordinates.x}, Y: {coordinates.y}
+                     </div>
+                  </div>
+               </>
+            ) : (
+               // Vista Template
+               <div>
+      <textarea
+         readOnly
+         value={JSON.stringify(diagramEngine.getModel().serialize(), null, 2)}
+      />
+      <button onClick={handleCopyClick}>
+         {copySuccess ? 'Copied!' : 'Copy JSON to Clipboard'}
+      </button>
+   </div>
+            )}
          </div>
+
       </div>
    );
 };

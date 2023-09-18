@@ -114,9 +114,6 @@ export const MyNodeWidget = props => {
     }
   };
 
-
-
-
   const handleTextClick = () => {
     if (!isEditing) {
       setIsEditing(true);
@@ -195,8 +192,8 @@ export const MyNodeWidget = props => {
         textAlign: 'center',
         border: props.node.name === 'groups' ? '2px dashed black' : '2px solid black',
         width: `${nodeSize.width}px`,
-        height: `${nodeSize.height}px`,
-        top: `${nodePosition.top}px`,
+        height: `${props.node.name === "input_text" ? 40 : nodeSize.height}px`,
+        top: `${props.node.name === "input_text" ? 5 : nodePosition.top}px`,
         left: `${nodePosition.left}px`,
       }}
     >
@@ -244,19 +241,19 @@ export const MyNodeWidget = props => {
 
       {props.node.name !== "input_text" && (
         <div
-        className="my-node-header-container"
-        style={{
-          backgroundColor: props.node.color,
-          display: 'flex',
-          justifyContent: props.node.name === 'groups' ? 'flex-start' : 'left', 
-          paddingLeft: props.node.name === 'groups' ? '10px' : undefined, // Padding si es "groups" para desplazarlo desde la izquierda
-          alignItems: 'center'
-        }}
-      >
-        <div className={`my-node-header-text ${props.node.name === 'groups' ? "groups-header-text" : ""}`} style={{ color: props.node.name === 'groups' ? 'black' : undefined }}>
-          {props.node.name === 'groups' ? nodeIcons[props.node.nodeType] : props.node.name}
+          className="my-node-header-container"
+          style={{
+            backgroundColor: props.node.color,
+            display: 'flex',
+            justifyContent: props.node.name === 'groups' ? 'flex-start' : 'left',
+            paddingLeft: props.node.name === 'groups' ? '10px' : undefined, // Padding si es "groups" para desplazarlo desde la izquierda
+            alignItems: 'center'
+          }}
+        >
+          <div className={`my-node-header-text ${props.node.name === 'groups' ? "groups-header-text" : ""}`} style={{ color: props.node.name === 'groups' ? 'black' : undefined }}>
+            {props.node.name === 'groups' ? nodeIcons[props.node.nodeType] : props.node.name}
+          </div>
         </div>
-      </div>
       )}
       {props.node.name === "input_text" ? (
         <p>{props.node.customText}</p>
