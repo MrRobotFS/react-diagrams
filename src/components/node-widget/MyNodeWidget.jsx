@@ -19,7 +19,7 @@ export const MyNodeWidget = props => {
   const [isEditing, setIsEditing] = useState(false);
   const [resizing, setResizing] = useState(false);
   const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 });
-  const [nodeSize, setNodeSize] = useState({ width: 100, height: 100 }); // puedes ajustar los valores iniciales a tus necesidades
+  const [nodeSize, setNodeSize] = useState({ width: 100, height: 100 });
   const [nodePosition, setNodePosition] = useState({ top: 0, left: 0 });
 
 
@@ -195,6 +195,9 @@ export const MyNodeWidget = props => {
         height: `${props.node.name === "input_text" ? 40 : nodeSize.height}px`,
         top: `${props.node.name === "input_text" ? 5 : nodePosition.top}px`,
         left: `${nodePosition.left}px`,
+        // zIndex: props.node.name === 'groups' ? -1 : 1,
+        // zIndex: props.node.name !== 'groups' ? 1 : -1,
+        zIndex: props.node.name !== 'groups' ? 2 : 1,
       }}
     >
       {selectionState === 'node' && (
@@ -279,8 +282,6 @@ export const MyNodeWidget = props => {
                 color: 'gray',
                 cursor: 'pointer'
               }}
-            // Aquí puedes añadir un evento onClick si deseas que el icono tenga una acción
-            // onClick={handleExpandClick}
             />
           )}
           {customText && <div className="custom-text-container">
