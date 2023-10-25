@@ -7,6 +7,7 @@ import { DiagramCanvas } from "../DiagramCanvas";
 import { MyNodeModel } from "../MyNodeModel";
 import "./my-creator-widget.css";
 import useUndoRedo from "../../hooks/useUndoRedo";
+import * as yaml from 'js-yaml';
 
 export const MyCreatorWidget = props => {
    const [locked, setLocked] = useState(false);
@@ -121,7 +122,7 @@ export const MyCreatorWidget = props => {
             setCopySuccess(false);
          });
    };
-   
+
 
    return (
       <div className="creator-body">
@@ -184,14 +185,19 @@ export const MyCreatorWidget = props => {
             ) : (
                // Vista Template
                <div>
-      <textarea
-         readOnly
-         value={JSON.stringify(diagramEngine.getModel().serialize(), null, 2)}
-      />
-      <button onClick={handleCopyClick}>
-         {copySuccess ? 'Copied!' : 'Copy JSON to Clipboard'}
-      </button>
-   </div>
+                  <textarea
+                     readOnly
+                     value={JSON.stringify(diagramEngine.getModel().serialize(), null, 2)}
+                  />
+                  <textarea
+                     readOnly
+                     value={yaml.dump(diagramEngine.getModel().serialize())}
+                  />
+                  <button onClick={handleCopyClick}>
+                     {copySuccess ? 'Copied!' : 'Copy JSON to Clipboard'}
+                  </button>
+               </div>
+
             )}
          </div>
 
