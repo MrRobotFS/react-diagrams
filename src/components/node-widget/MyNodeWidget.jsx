@@ -32,18 +32,15 @@ export const MyNodeWidget = props => {
   const handleDeleteNodeClick = e => {
     e.stopPropagation();
     props.node.remove();
-
-    // Update the arrowhead state when the node is deleted
     setShowOutArrowhead(false);
   };
-
 
   const showDeleteButtonsForLinks = (port, e) => {
     e.stopPropagation();
     setSelectedLinks(Object.values(port.getLinks()));
     setSelectionState('link');
   };
-
+  
   const handleDeleteLinkClick = (link, e) => {
     e.stopPropagation();
     link.remove();
@@ -52,8 +49,7 @@ export const MyNodeWidget = props => {
     if (selectedLinks.length === 1) {
       setSelectionState('none');
     }
-
-    // Check if there are links in the out port and update state
+    
     setHasOutLinks(Object.keys(props.node.getPort("out").links).length > 0);
   };
 
@@ -77,8 +73,7 @@ export const MyNodeWidget = props => {
     if (entering) {
       link.setColor('red');
     } else {
-      // Restaura el color original del link o asigna un valor por defecto
-      link.setColor(link.originalColor || '#00f');
+      link.setColor(link.originalColor || '#808080');
     }
   };
 
@@ -86,20 +81,16 @@ export const MyNodeWidget = props => {
     e.stopPropagation();
     setShowOutArrowhead(!showOutArrowhead);
 
-    // Check if there are links in the out port and update state
     setHasOutLinks(Object.keys(props.node.getPort("out").links).length > 0);
   };
 
   useEffect(() => {
-    // Check if there are links in the out port
     const hasLinks = Object.keys(props.node.getPort("out").links).length > 0;
 
-    // If there are no links, hide the arrowhead
     if (!hasLinks) {
       setShowOutArrowhead(false);
     }
 
-    // Update the hasOutLinks state
     setHasOutLinks(hasLinks);
   }, [props.node]);
 
@@ -149,7 +140,6 @@ export const MyNodeWidget = props => {
     if (resizing) {
       const dx = e.clientX - initialMousePosition.x;
       const dy = e.clientY - initialMousePosition.y;
-      // Suponiendo que tienes un estado para el tamaño del nodo.
       const newNodeSize = {
         width: nodeSize.width + dx,
         height: nodeSize.height + dy,
@@ -195,9 +185,7 @@ export const MyNodeWidget = props => {
         height: `${props.node.name === "input_text" ? 40 : nodeSize.height}px`,
         top: `${props.node.name === "input_text" ? 5 : nodePosition.top}px`,
         left: `${nodePosition.left}px`,
-        // zIndex: props.node.name === 'groups' ? -1 : 1,
-        // zIndex: props.node.name !== 'groups' ? 1 : -1,
-        zIndex: props.node.name !== 'groups' ? 2 : 1,
+        zIndex: props.node.name !== 'groups' ? 2 : 0,
       }}
     >
       {selectionState === 'node' && (
@@ -249,7 +237,7 @@ export const MyNodeWidget = props => {
             backgroundColor: props.node.color,
             display: 'flex',
             justifyContent: props.node.name === 'groups' ? 'flex-start' : 'left',
-            paddingLeft: props.node.name === 'groups' ? '10px' : undefined, // Padding si es "groups" para desplazarlo desde la izquierda
+            paddingLeft: props.node.name === 'groups' ? '10px' : undefined,
             alignItems: 'center'
           }}
         >

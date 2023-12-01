@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { CanvasWidget } from "@projectstorm/react-canvas-core";
 import { NodesTypesContainer } from "../nodes-types-container/NodesTypesContainer";
@@ -7,7 +7,12 @@ import { DiagramCanvas } from "../DiagramCanvas";
 import { MyNodeModel } from "../MyNodeModel";
 import "./my-creator-widget.css";
 import useUndoRedo from "../../hooks/useUndoRedo";
-import * as yaml from 'js-yaml';
+import * as yaml from 'js-yaml'; // Importa solo una vez
+import AceEditor from "react-ace";
+import "ace-builds/src-noconflict/mode-yaml";
+import "ace-builds/src-noconflict/theme-monokai";
+
+
 
 export const MyCreatorWidget = props => {
    const [locked, setLocked] = useState(false);
@@ -18,15 +23,13 @@ export const MyCreatorWidget = props => {
    const [viewMode, setViewMode] = useState("canvas");
    const [copySuccess, setCopySuccess] = useState(false);
 
+   const yamlEditorRef = useRef(null);
 
    const initialDiagramState = {
       nodes: [],
       links: [],
-      // other properties that your diagram might have
    };
 
-
-   // Custom hook
    const [diagramState, setDiagramState, undo, redo, history, currentIndex] = useUndoRedo(initialDiagramState);
 
 
@@ -41,14 +44,12 @@ export const MyCreatorWidget = props => {
 
       let newNode;
       if (data.name === "text_input") {
-         // Crear un nodo de tipo "text_input"
          newNode = new MyNodeModel({
             color: "#e86c24",
             name: "input_text",
             type: "text_input",
          });
       } else {
-         // Crear nodos existentes (LEX, HASH_AUDIT, LAMBDA, etc.)
          newNode = new MyNodeModel({
             color: "#e86c24",
             name: data.name,
@@ -105,22 +106,50 @@ export const MyCreatorWidget = props => {
       setViewMode(mode);
    };
 
-   const handleTemplateClick = () => {
-      const serializedModel = diagramEngine.getModel().serialize();
-      console.log(serializedModel);
-      alert(JSON.stringify(serializedModel, null, 2)); // Este alert muestra el JSON con un formato indentado
-   };
-
    const handleCopyClick = () => {
       navigator.clipboard.writeText(JSON.stringify(diagramEngine.getModel().serialize(), null, 2))
          .then(() => {
             setCopySuccess(true);
-            setTimeout(() => setCopySuccess(false), 2000); // Reset after 2 seconds
+            setTimeout(() => setCopySuccess(false), 2000);
          })
          .catch(err => {
             console.error('Failed to copy text: ', err);
             setCopySuccess(false);
          });
+   };
+
+   const handleDownloadJson = () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(diagramEngine.getModel().serialize(), null, 2));
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "canvas.json");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+   };
+
+   const handleDownloadYaml = () => {
+      const yamlStr = yaml.dump(diagramEngine.getModel().serialize());
+      const dataStr = "data:text/yaml;charset=utf-8," + encodeURIComponent(yamlStr);
+      const downloadAnchorNode = document.createElement('a');
+      downloadAnchorNode.setAttribute("href", dataStr);
+      downloadAnchorNode.setAttribute("download", "diagram.yaml");
+      document.body.appendChild(downloadAnchorNode);
+      downloadAnchorNode.click();
+      downloadAnchorNode.remove();
+   };
+
+   const toggleYamlFullScreen = () => {
+      const yamlElement = yamlEditorRef.current;
+      if (!document.fullscreenElement) {
+         if (yamlElement.requestFullscreen) {
+            yamlElement.requestFullscreen();
+         }
+      } else {
+         if (document.exitFullscreen) {
+            document.exitFullscreen();
+         }
+      }
    };
 
 
@@ -138,6 +167,7 @@ export const MyCreatorWidget = props => {
             <button onClick={handleZoomIn}><FaPlus /></button>
             <button onClick={handleFocusDiagram}>Focus</button>
             <button onClick={toggleFullScreen}>Fullscreen</button>
+            <button onClick={handleDownloadJson}>Download JSON</button>
             <button
                className={viewMode === "canvas" ? "active" : ""}
                onClick={() => toggleViewMode("canvas")}
@@ -161,8 +191,8 @@ export const MyCreatorWidget = props => {
                      <NodeTypeLabel model={{ ports: "in" }} name="LEX" />
                      <NodeTypeLabel model={{ ports: "in" }} name="HASH_AUDIT" />
                      <NodeTypeLabel model={{ ports: "in" }} name="LAMBDA" />
-                     <NodeTypeLabel model={{ ports: "in" }} name="text_input" /> {/* Nuevo tipo de nodo */}
-                     <NodeTypeLabel model={{ ports: "in" }} name="groups" /> {/* Nuevo tipo de nodo "groups" */}
+                     <NodeTypeLabel model={{ ports: "in" }} name="text_input" />
+                     <NodeTypeLabel model={{ ports: "in" }} name="groups" />
                   </NodesTypesContainer>
 
                   <div
@@ -183,8 +213,9 @@ export const MyCreatorWidget = props => {
                   </div>
                </>
             ) : (
-               // Vista Template
+
                <div>
+                  {/*
                   <textarea
                      readOnly
                      value={JSON.stringify(diagramEngine.getModel().serialize(), null, 2)}
@@ -193,9 +224,33 @@ export const MyCreatorWidget = props => {
                      readOnly
                      value={yaml.dump(diagramEngine.getModel().serialize())}
                   />
-                  <button onClick={handleCopyClick}>
-                     {copySuccess ? 'Copied!' : 'Copy JSON to Clipboard'}
-                  </button>
+*/}
+                  {/* <ReactJson src={diagramEngine.getModel().serialize()} theme="monokai" /> */}
+                  <div ref={yamlEditorRef}>
+                     <AceEditor
+                        mode="yaml"
+                        theme="monokai"
+                        name="yaml_editor"
+                        value={yaml.dump(diagramEngine.getModel().serialize())}
+                        readOnly={true}
+                        fontSize={14}
+                        showPrintMargin={true}
+                        showGutter={true}
+                        highlightActiveLine={true}
+                        setOptions={{
+                           enableBasicAutocompletion: false,
+                           enableLiveAutocompletion: false,
+                           enableSnippets: false,
+                           showLineNumbers: true,
+                           tabSize: 2,
+                        }}
+                     />
+                     <button onClick={handleDownloadYaml}>Download YAML</button>
+                     <button onClick={handleCopyClick}>
+                        {copySuccess ? 'Copied!' : 'Copy JSON to Clipboard'}
+                     </button>
+                     <button onClick={toggleYamlFullScreen}>Fullscreen YAML</button>
+                  </div>
                </div>
 
             )}

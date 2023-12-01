@@ -96,3 +96,7 @@
   background-color: #ddd;
   border-color: #bbb;
 }
+
+g{
+  z-index: 2000;
+}
