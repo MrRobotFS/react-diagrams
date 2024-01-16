@@ -40,7 +40,7 @@ export const MyNodeWidget = props => {
     setSelectedLinks(Object.values(port.getLinks()));
     setSelectionState('link');
   };
-  
+
   const handleDeleteLinkClick = (link, e) => {
     e.stopPropagation();
     link.remove();
@@ -49,7 +49,7 @@ export const MyNodeWidget = props => {
     if (selectedLinks.length === 1) {
       setSelectionState('none');
     }
-    
+
     setHasOutLinks(Object.keys(props.node.getPort("out").links).length > 0);
   };
 
@@ -145,6 +145,7 @@ export const MyNodeWidget = props => {
         height: nodeSize.height + dy,
       };
       setNodeSize(newNodeSize);
+      props.node.setSize(newNodeSize.width, newNodeSize.height);
       setNodePosition({
         top: nodePosition.top - dy / 2,
         left: nodePosition.left - dx / 2,
@@ -181,8 +182,12 @@ export const MyNodeWidget = props => {
         justifyContent: 'center',
         textAlign: 'center',
         border: props.node.name === 'groups' ? '2px dashed black' : '2px solid black',
-        width: `${nodeSize.width}px`,
-        height: `${props.node.name === "input_text" ? 40 : nodeSize.height}px`,
+        width: `${props.node.size.width}px`,
+        height: `${props.node.size.height}px`,
+        // top: `${props.node.position.y}px`,
+        // left: `${props.node.position.x}px`,
+        // width: `${nodeSize.width}px`,
+        // height: `${props.node.name === "input_text" ? 40 : nodeSize.height}px`,
         top: `${props.node.name === "input_text" ? 5 : nodePosition.top}px`,
         left: `${nodePosition.left}px`,
         zIndex: props.node.name !== 'groups' ? 2 : 0,

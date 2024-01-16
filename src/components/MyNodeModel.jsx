@@ -8,13 +8,12 @@ export class MyNodeModel extends NodeModel {
     });
 
     this.color = options.color || "black";
-    this.name = options.name || "Unknown"; // this is the new line
+    this.name = options.name || "Unknown";
 
     if (options) {
       this.color = options.color || "black";
     }
 
-    // setup an in and out port
     this.addPort(
       new DefaultPortModel({
         in: true,
@@ -28,6 +27,16 @@ export class MyNodeModel extends NodeModel {
       })
     );
 
-    this.nodeType = options.type || "Unknown"; // this is the new line
+    this.nodeType = options.type || "Unknown";
+    this.size = options.size || { width: 100, height: 100 };
+    //this.position = options.position || { x: 0, y: 0 };
   }
+
+  setSize(width, height) {
+    this.size = { width, height };
+  }
+
+  // setPosition(x, y) {
+  //   this.position = { x, y };
+  // }
 }
