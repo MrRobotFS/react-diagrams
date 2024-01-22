@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { PortWidget } from "@projectstorm/react-diagrams-core";
-import { FaTimes, FaArrowsAltH, FaPencilAlt, FaExpand, FaExpandArrowsAlt } from "react-icons/fa";
+import { FaTimes, FaArrowsAltH, FaPencilAlt, FaExpand, FaExpandArrowsAlt, FaUnlock, FaLock } from "react-icons/fa";
 import "./my-node-widget.css";
 
 const nodeIcons = {
@@ -21,6 +21,7 @@ export const MyNodeWidget = props => {
   const [initialMousePosition, setInitialMousePosition] = useState({ x: 0, y: 0 });
   const [nodeSize, setNodeSize] = useState({ width: 100, height: 100 });
   const [nodePosition, setNodePosition] = useState({ top: 0, left: 0 });
+  const [isLocked, setIsLocked] = useState(false);
 
 
 
@@ -166,6 +167,10 @@ export const MyNodeWidget = props => {
     };
   }, [resizing, initialMousePosition, nodeSize]);
 
+  const handleLockToggle = () => {
+    setIsLocked(!isLocked);
+  };
+
 
   return (
     <div
@@ -232,6 +237,26 @@ export const MyNodeWidget = props => {
           >
             <FaTimes />
           </button>
+          <button
+            className="lock-toggle-button"
+            onClick={handleLockToggle}
+            style={{
+              color: 'white',
+              borderRadius: '50%',
+              backgroundColor: isLocked ? 'green' : 'grey',
+              border: `2px solid ${isLocked ? 'green' : 'grey'}`,
+              position: 'absolute',
+              top: '-10px',
+              right: '-100px', // Adjust position as needed
+              width: '18px',
+              height: '18px',
+              zIndex: 1000,
+              padding: '0',
+              fontSize: '12px'
+            }}
+          >
+            {isLocked ? <FaLock /> : <FaUnlock />}
+          </button>
         </div>
       )}
 
@@ -264,7 +289,7 @@ export const MyNodeWidget = props => {
               draggable="false"
             />
           )}
-          {props.node.name === "groups" && (
+          {props.node.name === "groups" && !isLocked && (
             <FaExpandArrowsAlt
               onMouseDown={startResizing}
               style={{
