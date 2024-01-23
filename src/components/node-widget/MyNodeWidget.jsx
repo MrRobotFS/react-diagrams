@@ -237,26 +237,29 @@ export const MyNodeWidget = props => {
           >
             <FaTimes />
           </button>
-          <button
-            className="lock-toggle-button"
-            onClick={handleLockToggle}
-            style={{
-              color: 'white',
-              borderRadius: '50%',
-              backgroundColor: isLocked ? 'green' : 'grey',
-              border: `2px solid ${isLocked ? 'green' : 'grey'}`,
-              position: 'absolute',
-              top: '-10px',
-              right: '-100px', // Adjust position as needed
-              width: '18px',
-              height: '18px',
-              zIndex: 1000,
-              padding: '0',
-              fontSize: '12px'
-            }}
-          >
-            {isLocked ? <FaLock /> : <FaUnlock />}
-          </button>
+          {selectionState === 'node' && props.node.name === 'groups' && (
+            <button
+              className="lock-toggle-button"
+              onClick={handleLockToggle}
+              style={{
+                color: 'white',
+                borderRadius: '50%',
+                backgroundColor: isLocked ? 'green' : 'grey',
+                border: `2px solid ${isLocked ? 'green' : 'grey'}`,
+                position: 'absolute',
+                top: '-10px',
+                right: '-100px', // Adjust position as needed
+                width: '18px',
+                height: '18px',
+                zIndex: 1000,
+                padding: '0',
+                fontSize: '12px'
+              }}
+            >
+              {isLocked ? <FaLock /> : <FaUnlock />}
+            </button>
+          )}
+
         </div>
       )}
 

@@ -29,14 +29,22 @@ export class MyNodeModel extends NodeModel {
 
     this.nodeType = options.type || "Unknown";
     this.size = options.size || { width: 100, height: 100 };
-    //this.position = options.position || { x: 0, y: 0 };
   }
 
   setSize(width, height) {
     this.size = { width, height };
   }
 
-  // setPosition(x, y) {
-  //   this.position = { x, y };
-  // }
+  locked = false;
+
+  setLocked(locked){
+    this.locked = locked;
+  }
+
+  setPosition(x, y){
+    if(!this.locked){
+      super.setPosition(x,y);
+    }
+  }
+  
 }

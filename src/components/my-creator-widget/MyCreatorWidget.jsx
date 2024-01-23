@@ -152,6 +152,15 @@ export const MyCreatorWidget = props => {
       }
    };
 
+   const toggleLock = () => {
+      setLocked(!locked);
+      const nodes = diagramEngine.getModel().getNodes();
+      Object.values(nodes).forEach(node => {
+         if(node instanceof MyNodeModel){
+            node.setLocked(!locked);
+         }
+      })
+   }
 
    return (
       <div className="creator-body">
@@ -180,7 +189,9 @@ export const MyCreatorWidget = props => {
             >
                Template
             </button>
-
+            <button onClick={toggleLock}>
+               {locked ? "Unlock Canvas": "Lock Canvas"}
+            </button>
 
          </div>
 
@@ -215,17 +226,6 @@ export const MyCreatorWidget = props => {
             ) : (
 
                <div>
-                  {/*
-                  <textarea
-                     readOnly
-                     value={JSON.stringify(diagramEngine.getModel().serialize(), null, 2)}
-                  />
-                  <textarea
-                     readOnly
-                     value={yaml.dump(diagramEngine.getModel().serialize())}
-                  />
-*/}
-                  {/* <ReactJson src={diagramEngine.getModel().serialize()} theme="monokai" /> */}
                   <div ref={yamlEditorRef}>
                      <AceEditor
                         mode="yaml"
