@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { PortWidget } from "@projectstorm/react-diagrams-core";
-import { FaTimes, FaArrowsAltH, FaPencilAlt, FaExpand, FaExpandArrowsAlt, FaUnlock, FaLock } from "react-icons/fa";
+import { FaTimes, FaArrowsAltH, FaPencilAlt, FaExpand, FaExpandArrowsAlt, FaUnlock, FaLock, FaCircle } from "react-icons/fa";
 import "./my-node-widget.css";
 
 const nodeIcons = {
@@ -22,8 +22,7 @@ export const MyNodeWidget = props => {
   const [nodeSize, setNodeSize] = useState({ width: 100, height: 100 });
   const [nodePosition, setNodePosition] = useState({ top: 0, left: 0 });
   const [isLocked, setIsLocked] = useState(false);
-
-
+  const [showTopAndBottomPorts, setShowTopAndBottomPorts] = useState(false);
 
   const handleNodeClick = () => {
     setSelectionState(selectionState === 'node' ? 'none' : 'node');
@@ -171,6 +170,13 @@ export const MyNodeWidget = props => {
     setIsLocked(!isLocked);
   };
 
+  /*Show hide top/bottom buttons*/
+  const toggleTopAndBottomPorts = () => {
+    setShowTopAndBottomPorts(!showTopAndBottomPorts);
+  };
+
+  const hasTopInLinks = Object.keys(props.node.getPort("top").links).length > 0;
+  const hasBottomOutLinks = Object.keys(props.node.getPort("bottom").links).length > 0;
 
   return (
     <div
@@ -237,6 +243,27 @@ export const MyNodeWidget = props => {
           >
             <FaTimes />
           </button>
+          <button
+            onClick={toggleTopAndBottomPorts}
+            style={{
+              color: 'white',
+              borderRadius: '50%',
+              backgroundColor: '#FFA500',
+              border: '2px solid #FFA500',
+              position: 'absolute',
+              top: '-10px',
+              right: '-100px',
+              width: '18px',
+              height: '18px',
+              zIndex: 1000,
+              padding: '0',
+              fontSize: '12px'
+            }}
+          >
+            <FaCircle />
+          </button>
+
+
           {selectionState === 'node' && props.node.name === 'groups' && (
             <button
               className="lock-toggle-button"
@@ -370,23 +397,82 @@ export const MyNodeWidget = props => {
           )}
         </div>
       </PortWidget>
-      <PortWidget
-        className="port-container top-port"
-        engine={props.engine}
-        port={props.node.getPort("top")}
-      >
-        <div className="my-port">
-        </div>
-      </PortWidget>
+      {/* {showTopAndBottomPorts && ( */}
+      <>
+        <PortWidget
+          className="port-container top-port"
+          engine={props.engine}
+          port={props.node.getPort("top")}
+        >
+          <div className="my-port">
+            {hasTopInLinks && (
+              <>
+                <svg className="arrowhead" viewBox="0 0 20 20" onClick={(e) => showDeleteButtonsForLinks(props.node.getPort("top"), e)}>
+                  <path d="M0 10 L10 0 L20 10 L10 20 Z"></path>
+                </svg>
+                {
+                  selectionState === 'link' && selectedLinks.map((link, index) => (
+                    <button
+                      key={link.getID()}
+                      className="delete-button"
+                      onClick={(e) => handleDeleteLinkClick(link, e)}
+                      onMouseEnter={() => handleLinkHover(link, true)}
+                      onMouseLeave={() => handleLinkHover(link, false)}
+                      style={{
+                        color: 'white', borderRadius: '50%', backgroundColor: 'red',
+                        border: '2px solid red', position: 'absolute', top: '35px',
+                        left: `${(25 * index) - 10}px`,
+                        width: '18px', height: '18px', zIndex: 2000,
+                        padding: '0', fontSize: '12px',
+                      }}
+                    >
+                      <FaTimes />
+                    </button>
+                  ))
+                }
+              </>
+            )}
+          </div>
+        </PortWidget>
 
-      <PortWidget
-        className="port-container bottom-port"
-        engine={props.engine}
-        port={props.node.getPort("bottom")}
-      >
-        <div className="my-port">
-        </div>
-      </PortWidget>
+        <PortWidget
+          className="port-container bottom-port"
+          engine={props.engine}
+          port={props.node.getPort("bottom")}
+        >
+          <div className="my-port">
+            {hasBottomOutLinks && (
+              <>
+                <svg className="arrowhead" viewBox="0 0 20 20" onClick={(e) => showDeleteButtonsForLinks(props.node.getPort("bottom"), e)}>
+                  <path d="M20 10 L10 20 L0 10 L10 0 Z"></path>
+                </svg>
+                {
+                  selectionState === 'link' && selectedLinks.map((link, index) => (
+                    <button
+                      key={link.getID()}
+                      className="delete-button"
+                      onClick={(e) => handleDeleteLinkClick(link, e)}
+                      onMouseEnter={() => handleLinkHover(link, true)}
+                      onMouseLeave={() => handleLinkHover(link, false)}
+                      style={{
+                        color: 'white', borderRadius: '50%', backgroundColor: 'red',
+                        border: '2px solid red', position: 'absolute', bottom: '35px',
+                        left: `${(25 * index) - 10}px`,
+                        width: '18px', height: '18px', zIndex: 2000,
+                        padding: '0', fontSize: '12px',
+                      }}
+                    >
+                      <FaTimes />
+                    </button>
+                  ))
+                }
+              </>
+            )}
+          </div>
+        </PortWidget>
+
+      </>
+      {/* )} */}
     </div>
   );
 

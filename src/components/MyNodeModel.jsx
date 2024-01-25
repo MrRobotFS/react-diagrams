@@ -35,7 +35,7 @@ export class MyNodeModel extends NodeModel {
     );
     this.addPort(
       new DefaultPortModel({
-        in: true,
+        in: false,
         name: "bottom"
       })
     );
