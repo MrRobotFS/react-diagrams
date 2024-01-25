@@ -400,7 +400,7 @@ export const MyNodeWidget = props => {
       {/* {showTopAndBottomPorts && ( */}
       <>
         <PortWidget
-          className="port-container top-port"
+          className="port-container-top top-port"
           engine={props.engine}
           port={props.node.getPort("top")}
         >
@@ -436,7 +436,7 @@ export const MyNodeWidget = props => {
         </PortWidget>
 
         <PortWidget
-          className="port-container bottom-port"
+          className="port-container-bottom bottom-port"
           engine={props.engine}
           port={props.node.getPort("bottom")}
         >

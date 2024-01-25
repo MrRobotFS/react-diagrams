@@ -67,9 +67,19 @@
   top: 40px;
 }
 
+.port-container-top {
+  position: absolute;
+  top: -8px;
+}
+
+.port-container-bottom {
+  position: absolute;
+  top: 95px;
+}
+
 .left-port {
   left: 0;
-  margin-left: -7px;
+  margin-left: -px;
 }
 
 .right-port {
