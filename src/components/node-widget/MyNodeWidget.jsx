@@ -408,7 +408,7 @@ export const MyNodeWidget = props => {
             {hasTopInLinks && (
               <>
                 <svg className="arrowhead" viewBox="0 0 20 20" onClick={(e) => showDeleteButtonsForLinks(props.node.getPort("top"), e)}>
-                  <path d="M0 10 L10 0 L20 10 L10 20 Z"></path>
+                  <path d="M10 0 L20 20 L0 20 Z"></path>
                 </svg>
                 {
                   selectionState === 'link' && selectedLinks.map((link, index) => (
@@ -441,31 +441,29 @@ export const MyNodeWidget = props => {
           port={props.node.getPort("bottom")}
         >
           <div className="my-port">
-            {hasBottomOutLinks && (
+            {showOutArrowhead && hasBottomOutLinks && (
               <>
                 <svg className="arrowhead" viewBox="0 0 20 20" onClick={(e) => showDeleteButtonsForLinks(props.node.getPort("bottom"), e)}>
-                  <path d="M20 10 L10 20 L0 10 L10 0 Z"></path>
+                  <path d="M10 20 L20 0 L0 0 Z"></path>
                 </svg>
-                {
-                  selectionState === 'link' && selectedLinks.map((link, index) => (
-                    <button
-                      key={link.getID()}
-                      className="delete-button"
-                      onClick={(e) => handleDeleteLinkClick(link, e)}
-                      onMouseEnter={() => handleLinkHover(link, true)}
-                      onMouseLeave={() => handleLinkHover(link, false)}
-                      style={{
-                        color: 'white', borderRadius: '50%', backgroundColor: 'red',
-                        border: '2px solid red', position: 'absolute', bottom: '35px',
-                        left: `${(25 * index) - 10}px`,
-                        width: '18px', height: '18px', zIndex: 2000,
-                        padding: '0', fontSize: '12px',
-                      }}
-                    >
-                      <FaTimes />
-                    </button>
-                  ))
-                }
+                {selectionState === 'link' && selectedLinks.map((link, index) => (
+                  <button
+                    key={link.getID()}
+                    className="delete-button"
+                    onClick={(e) => handleDeleteLinkClick(link, e)}
+                    onMouseEnter={() => handleLinkHover(link, true)}
+                    onMouseLeave={() => handleLinkHover(link, false)}
+                    style={{
+                      color: 'white', borderRadius: '50%', backgroundColor: 'red',
+                      border: '2px solid red', position: 'absolute', bottom: '35px',
+                      left: `${(25 * index) - 10}px`,
+                      width: '18px', height: '18px', zIndex: 2000,
+                      padding: '0', fontSize: '12px',
+                    }}
+                  >
+                    <FaTimes />
+                  </button>
+                ))}
               </>
             )}
           </div>
