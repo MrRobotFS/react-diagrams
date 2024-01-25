@@ -100,3 +100,57 @@
 g{
   z-index: 2000;
 }
+
+/* Container for the entire FAQs section */
+.faqs-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 20px auto;
+  max-width: 800px; /* Adjust based on your preference */
+}
+
+/* Individual column for FAQs */
+.faqs-column {
+  flex: 1;
+  padding: 0 15px;
+}
+
+/* Estilos para la sección completa de FAQs */
+.faqs {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+/* Estilos para cada ítem de FAQ */
+.faq-item {
+  margin-bottom: 10px;
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+/* Estilos para la pregunta de cada FAQ */
+.faq-question {
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.faq-question:hover {
+  color: #007bff; /* Cambia el color al pasar el mouse para indicar interactividad */
+}
+
+/* Estilos para la respuesta de cada FAQ */
+.faq-answer {
+  padding: 10px;
+  margin-top: 5px;
+  background-color: #fff;
+  border-radius: 4px;
+  color: #555;
+  font-size: 0.9em;
+  transition: all 0.3s ease;
+}

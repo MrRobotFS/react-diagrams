@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { CanvasWidget } from "@projectstorm/react-canvas-core";
 import { NodesTypesContainer } from "../nodes-types-container/NodesTypesContainer";
@@ -11,6 +11,9 @@ import * as yaml from 'js-yaml'; // Importa solo una vez
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-yaml";
 import "ace-builds/src-noconflict/theme-monokai";
+import introJs from 'intro.js';
+import 'intro.js/introjs.css';
+import FAQs from "../Faqs";
 
 
 
@@ -156,11 +159,50 @@ export const MyCreatorWidget = props => {
       setLocked(!locked);
       const nodes = diagramEngine.getModel().getNodes();
       Object.values(nodes).forEach(node => {
-         if(node instanceof MyNodeModel){
+         if (node instanceof MyNodeModel) {
             node.setLocked(!locked);
          }
       })
    }
+
+   /*Intro .js*/
+   const zoomControlsRef = useRef(null);
+   const listServices = useRef(null);
+
+   useEffect(() => {
+      introJs().setOptions({
+         steps: [
+            {
+               intro: "Welcome to the Vernil Market Architecture View."
+            },
+            {
+               element: document.querySelector('.zoom-controls'),
+               intro: "These are zoom controls."
+            },
+            {
+               element: document.querySelector('.nodes-types-container'),
+               intro: "This is the Nodes Types Container."
+            },
+         ],
+         showProgress: true,
+         exitOnOverlayClick: false,
+         showBullets: true
+      }).start();
+   }, []);
+
+   /*FAQS*/
+   const faqs = [
+      { question: "How do I add a new node to the canvas?", answer: "Drag and drop a node type from the Node Types Container onto the canvas." },
+      { question: "How can I zoom in and out on the canvas?", answer: "Use the zoom controls (+/- buttons) to zoom in or out. You can also see the current zoom percentage displayed there." },
+      { question: "Is it possible to lock the canvas to prevent changes?", answer: "Yes, you can toggle the canvas lock by clicking the 'Lock Canvas'/'Unlock Canvas' button." },
+      { question: "How do I download my diagram in JSON format?", answer: "Click the 'Download JSON' button to save your diagram's current state as a JSON file." },
+      { question: "Can I also download my diagram in YAML format?", answer: "Yes, click on the 'Download YAML' button to export the diagram in YAML format." },
+      { question: "Is there a way to copy the diagram's JSON to the clipboard?", answer: "Yes, click the 'Copy JSON to Clipboard' button, and the JSON representation of your diagram will be copied." },
+      { question: "How do I toggle between different view modes?", answer: "Use the 'Canvas' and 'Template' buttons to toggle between different view modes." },
+      { question: "How can I focus on the entire diagram at once?", answer: "Click the 'Focus' button to adjust the view to fit the entire diagram on the screen." },
+      { question: "What is the purpose of the coordinates display?", answer: "The coordinates display shows the current mouse position relative to the canvas, useful for precision placement of nodes." },
+      { question: "How do I edit or delete a node?", answer: "Click on a node to select it. You can edit it by clicking the pencil icon or delete it using the trash icon." }
+  ];
 
    return (
       <div className="creator-body">
@@ -170,7 +212,7 @@ export const MyCreatorWidget = props => {
             </div>
          </header>
 
-         <div className="zoom-controls">
+         <div className="zoom-controls" ref={zoomControlsRef}>
             <button onClick={handleZoomOut}><FaMinus /></button>
             <span>{zoomPercentage}%</span>
             <button onClick={handleZoomIn}><FaPlus /></button>
@@ -190,7 +232,7 @@ export const MyCreatorWidget = props => {
                Template
             </button>
             <button onClick={toggleLock}>
-               {locked ? "Unlock Canvas": "Lock Canvas"}
+               {locked ? "Unlock Canvas" : "Lock Canvas"}
             </button>
 
          </div>
@@ -198,6 +240,7 @@ export const MyCreatorWidget = props => {
          <div className="creator-content" onMouseMove={handleMouseMove} ref={creatorContentRef}>
             {viewMode === "canvas" ? (
                <>
+                  <div className="nodes-types-container" ref={listServices}>
                   <NodesTypesContainer>
                      <NodeTypeLabel model={{ ports: "in" }} name="LEX" />
                      <NodeTypeLabel model={{ ports: "in" }} name="HASH_AUDIT" />
@@ -205,7 +248,7 @@ export const MyCreatorWidget = props => {
                      <NodeTypeLabel model={{ ports: "in" }} name="text_input" />
                      <NodeTypeLabel model={{ ports: "in" }} name="groups" />
                   </NodesTypesContainer>
-
+                  </div>
                   <div
                      className="creator-layer"
                      onDrop={onNodeDrop}
@@ -255,7 +298,7 @@ export const MyCreatorWidget = props => {
 
             )}
          </div>
-
+         <FAQs faqs={faqs} />
       </div>
    );
 };
