@@ -26,6 +26,19 @@ export class MyNodeModel extends NodeModel {
         name: "out"
       })
     );
+    
+    this.addPort(
+      new DefaultPortModel({
+        in: true,
+        name: "top"
+      })
+    );
+    this.addPort(
+      new DefaultPortModel({
+        in: true,
+        name: "bottom"
+      })
+    );
 
     this.nodeType = options.type || "Unknown";
     this.size = options.size || { width: 100, height: 100 };

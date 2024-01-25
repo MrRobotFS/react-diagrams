@@ -370,6 +370,23 @@ export const MyNodeWidget = props => {
           )}
         </div>
       </PortWidget>
+      <PortWidget
+        className="port-container top-port"
+        engine={props.engine}
+        port={props.node.getPort("top")}
+      >
+        <div className="my-port">
+        </div>
+      </PortWidget>
+
+      <PortWidget
+        className="port-container bottom-port"
+        engine={props.engine}
+        port={props.node.getPort("bottom")}
+      >
+        <div className="my-port">
+        </div>
+      </PortWidget>
     </div>
   );
 

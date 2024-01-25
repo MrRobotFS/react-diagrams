@@ -81,3 +81,16 @@
   flex-direction: column;
 }
 
+.top-port .my-port {
+  position: absolute;
+  top: -50px; 
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bottom-port .my-port {
+  position: absolute;
+  bottom: -70px;
+  left: 50%;
+  transform: translateX(-50%);
+}
