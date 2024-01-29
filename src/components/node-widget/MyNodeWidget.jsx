@@ -22,7 +22,7 @@ export const MyNodeWidget = props => {
   const [nodeSize, setNodeSize] = useState({ width: 100, height: 100 });
   const [nodePosition, setNodePosition] = useState({ top: 0, left: 0 });
   const [isLocked, setIsLocked] = useState(false);
-  const [showTopAndBottomPorts, setShowTopAndBottomPorts] = useState(false);
+  // const [showTopAndBottomPorts, setShowTopAndBottomPorts] = useState(false);
 
   const handleNodeClick = () => {
     setSelectionState(selectionState === 'node' ? 'none' : 'node');
@@ -77,22 +77,40 @@ export const MyNodeWidget = props => {
     }
   };
 
+  /* Consistent arrowheads */
   const handleToggleOutArrowhead = e => {
     e.stopPropagation();
-    setShowOutArrowhead(!showOutArrowhead);
+
+    const newShowOutArrowhead = !props.node.showOutArrowhead;
+    props.node.showOutArrowhead = newShowOutArrowhead;
+    setShowOutArrowhead(newShowOutArrowhead);
 
     setHasOutLinks(Object.keys(props.node.getPort("out").links).length > 0);
-  };
+};
 
-  useEffect(() => {
-    const hasLinks = Object.keys(props.node.getPort("out").links).length > 0;
-
-    if (!hasLinks) {
-      setShowOutArrowhead(false);
+useEffect(() => {
+    if (props.node.showOutArrowhead !== undefined) {
+        setShowOutArrowhead(props.node.showOutArrowhead);
     }
+}, [props.node]);
 
-    setHasOutLinks(hasLinks);
-  }, [props.node]);
+
+  // const handleToggleOutArrowhead = e => {
+  //   e.stopPropagation();
+  //   setShowOutArrowhead(!showOutArrowhead);
+
+  //   setHasOutLinks(Object.keys(props.node.getPort("out").links).length > 0);
+  // };
+
+  // useEffect(() => {
+  //   const hasLinks = Object.keys(props.node.getPort("out").links).length > 0;
+
+  //   if (!hasLinks) {
+  //     setShowOutArrowhead(false);
+  //   }
+
+  //   setHasOutLinks(hasLinks);
+  // }, [props.node]);
 
   const handleEditText = () => {
     if (props.node.name === "input_text") {
@@ -171,15 +189,16 @@ export const MyNodeWidget = props => {
   };
 
   /*Show hide top/bottom buttons*/
-  const toggleTopAndBottomPorts = () => {
-    setShowTopAndBottomPorts(!showTopAndBottomPorts);
-  };
+  // const toggleTopAndBottomPorts = () => {
+  //   setShowTopAndBottomPorts(!showTopAndBottomPorts);
+  // };
 
   const hasTopInLinks = Object.keys(props.node.getPort("top").links).length > 0;
   const hasBottomOutLinks = Object.keys(props.node.getPort("bottom").links).length > 0;
 
   return (
     <div
+    title={props.node.name}
       ref={nodeRef}
       className={`my-node ${selectionState === 'node' ? "selected" : ""}`}
       onClick={handleNodeClick}
@@ -195,10 +214,6 @@ export const MyNodeWidget = props => {
         border: props.node.name === 'groups' ? '2px dashed black' : '2px solid black',
         width: `${props.node.size.width}px`,
         height: `${props.node.size.height}px`,
-        // top: `${props.node.position.y}px`,
-        // left: `${props.node.position.x}px`,
-        // width: `${nodeSize.width}px`,
-        // height: `${props.node.name === "input_text" ? 40 : nodeSize.height}px`,
         top: `${props.node.name === "input_text" ? 5 : nodePosition.top}px`,
         left: `${nodePosition.left}px`,
         zIndex: props.node.name !== 'groups' ? 2 : 0,
@@ -243,7 +258,7 @@ export const MyNodeWidget = props => {
           >
             <FaTimes />
           </button>
-          <button
+          {/* <button
             onClick={toggleTopAndBottomPorts}
             style={{
               color: 'white',
@@ -261,9 +276,9 @@ export const MyNodeWidget = props => {
             }}
           >
             <FaCircle />
-          </button>
+          </button> */}
 
-
+          
           {selectionState === 'node' && props.node.name === 'groups' && (
             <button
               className="lock-toggle-button"
