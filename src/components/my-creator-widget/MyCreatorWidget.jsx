@@ -5,6 +5,7 @@ import { NodesTypesContainer } from "../nodes-types-container/NodesTypesContaine
 import { NodeTypeLabel } from "../node-type-label/NodeTypeLabel";
 import { DiagramCanvas } from "../DiagramCanvas";
 import { MyNodeModel } from "../MyNodeModel";
+import { MyLinkModel } from '../MyLinkModel';
 import "./my-creator-widget.css";
 import useUndoRedo from "../../hooks/useUndoRedo";
 import * as yaml from 'js-yaml'; // Importa solo una vez
@@ -62,6 +63,30 @@ export const MyCreatorWidget = props => {
 
       newNode.setPosition(point);
       diagramEngine.getModel().addNode(newNode);
+
+      // // Crear un nuevo MyLinkModel personalizado
+      // const newLink = new MyLinkModel();
+      // const sourcePort = newNode.addOutPort("Out"); // Establecer el puerto de origen
+      // newLink.setSourcePort(sourcePort);
+
+      // // Obtener un nodo existente en el lienzo para establecer el puerto de destino
+      // const nodes = diagramEngine.getModel().getNodes();
+      // const firstNode = Object.values(nodes)[0];
+      // if (firstNode) {
+      //    const targetPort = firstNode.addInPort("In"); // Establecer el puerto de destino
+      //    newLink.setTargetPort(targetPort);
+
+      //    // Establecer los puntos de conexión del enlace
+      //    const sourcePosition = sourcePort.getPosition();
+      //    const targetPosition = targetPort.getPosition();
+      //    newLink.addPoint(sourcePosition);
+      //    newLink.addPoint(targetPosition);
+      // }
+
+      // // Agregar el nuevo enlace al modelo del diagrama
+      // diagramEngine.getModel().addLink(newLink);
+
+
       forceUpdate();
 
       const serializedModel = diagramEngine.getModel().serialize();
@@ -202,7 +227,7 @@ export const MyCreatorWidget = props => {
       { question: "How can I focus on the entire diagram at once?", answer: "Click the 'Focus' button to adjust the view to fit the entire diagram on the screen." },
       { question: "What is the purpose of the coordinates display?", answer: "The coordinates display shows the current mouse position relative to the canvas, useful for precision placement of nodes." },
       { question: "How do I edit or delete a node?", answer: "Click on a node to select it. You can edit it by clicking the pencil icon or delete it using the trash icon." }
-  ];
+   ];
 
    return (
       <div className="creator-body">
@@ -241,13 +266,13 @@ export const MyCreatorWidget = props => {
             {viewMode === "canvas" ? (
                <>
                   <div className="nodes-types-container" ref={listServices}>
-                  <NodesTypesContainer>
-                     <NodeTypeLabel model={{ ports: "in" }} name="LEX" />
-                     <NodeTypeLabel model={{ ports: "in" }} name="HASH_AUDIT" />
-                     <NodeTypeLabel model={{ ports: "in" }} name="LAMBDA" />
-                     <NodeTypeLabel model={{ ports: "in" }} name="text_input" />
-                     <NodeTypeLabel model={{ ports: "in" }} name="groups" />
-                  </NodesTypesContainer>
+                     <NodesTypesContainer>
+                        <NodeTypeLabel model={{ ports: "in" }} name="LEX" />
+                        <NodeTypeLabel model={{ ports: "in" }} name="HASH_AUDIT" />
+                        <NodeTypeLabel model={{ ports: "in" }} name="LAMBDA" />
+                        <NodeTypeLabel model={{ ports: "in" }} name="text_input" />
+                        <NodeTypeLabel model={{ ports: "in" }} name="groups" />
+                     </NodesTypesContainer>
                   </div>
                   <div
                      className="creator-layer"
