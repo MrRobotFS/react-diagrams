@@ -1,41 +1,30 @@
 import React from 'react';
 import { DefaultLinkWidget } from '@projectstorm/react-diagrams';
-import { DefaultLinkModel } from '@projectstorm/react-diagrams';
 
 export class MyLinkWidget extends DefaultLinkWidget {
     
-  generateLinkPath(firstPoint, lastPoint, path) {
-    return path;
-  }
+    // Método para generar un segmento de enlace
+    generateLinkSegment(model, selected, path) {
+        // Aquí puedes personalizar el segmento del enlace como prefieras
+        // El siguiente es un ejemplo básico que dibuja una línea recta
+        return (
+            <g>
+                <path
+                    className={selected ? "link-path-selected" : "link-path"}
+                    strokeWidth={model.width}
+                    stroke={model.color}
+                    d={path}
+                />
+            </g>
+        );
+    }
 
-  generateArrow(firstPoint, lastPoint) {
-    const dx = lastPoint.x - firstPoint.x;
-    const dy = lastPoint.y - firstPoint.y;
-    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+    render() {
+        // Log para confirmar la renderización del enlace
+        console.log('Renderizando MyLinkWidget', this.props.link);
 
-    return (
-      <g className="arrow" transform={`translate(${lastPoint.x}, ${lastPoint.y}) rotate(${angle})`}>
-        <polygon points="-10,-5 0,0 -10,5" fill={this.props.link.getColor()} />
-      </g>
-    );
-  }
-
-  render() {
-    const renderedPath = super.render();
-
-    const { points } = this.props.link.getPoints();
-    const firstPoint = points[0];
-    const lastPoint = points[points.length - 1];
-
-    const path = this.generateLinkPath(firstPoint, lastPoint, renderedPath.props.d);
-
-    const arrow = this.generateArrow(firstPoint, lastPoint);
-
-    return (
-      <g>
-        {React.cloneElement(renderedPath, { d: path })}
-        {arrow}
-      </g>
-    );
-  }
+        // Modifica la renderización como necesites. 
+        // El siguiente ejemplo simplemente extiende la funcionalidad básica del DefaultLinkWidget
+        return super.render();
+    }
 }
