@@ -207,6 +207,7 @@ export const MyCreatorWidget = props => {
   ];
  
   const createTestLink = () => {
+   console.log('Creando enlace de prueba entre', nodeOne, 'y', nodeTwo);
    // Asegúrate de tener al menos dos nodos para conectar
    const nodes = diagramEngine.getModel().getNodes();
    const nodeKeys = Object.keys(nodes);

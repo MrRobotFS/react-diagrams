@@ -371,9 +371,9 @@ useEffect(() => {
         <div className="my-port">
           {hasInLinks && (
             <>
-              <svg className="arrowhead" viewBox="0 0 20 20" onClick={(e) => showDeleteButtonsForLinks(props.node.getPort("in"), e)}>
+              {/* <svg className="arrowhead" viewBox="0 0 20 20" onClick={(e) => showDeleteButtonsForLinks(props.node.getPort("in"), e)}>
                 <path d="M0 0 L20 10 L0 20 L5 10 Z"></path>
-              </svg>
+              </svg> */}
               {
                 selectionState === 'link' && selectedLinks.map((link, index) => (
                   <button
@@ -405,11 +405,11 @@ useEffect(() => {
         port={props.node.getPort("out")}
       >
         <div className="my-port">
-          {showOutArrowhead && hasOutLinks && (
+          {/* {showOutArrowhead && hasOutLinks && (
             <svg className="arrowhead" viewBox="0 0 20 20" onClick={(e) => showDeleteButtonsForLinks(props.node.getPort("out"), e)}>
               <path d="M20 0 L0 10 L20 20 L15 10 Z"></path>
             </svg>
-          )}
+          )} */}
         </div>
       </PortWidget>
       {/* {showTopAndBottomPorts && ( */}
@@ -422,9 +422,9 @@ useEffect(() => {
           <div className="my-port">
             {hasTopInLinks && (
               <>
-                <svg className="arrowhead" viewBox="0 0 20 20" onClick={(e) => showDeleteButtonsForLinks(props.node.getPort("top"), e)}>
+                {/* <svg className="arrowhead" viewBox="0 0 20 20" onClick={(e) => showDeleteButtonsForLinks(props.node.getPort("top"), e)}>
                   <path d="M10 0 L20 20 L0 20 Z"></path>
-                </svg>
+                </svg> */}
                 {
                   selectionState === 'link' && selectedLinks.map((link, index) => (
                     <button

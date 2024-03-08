@@ -7,7 +7,13 @@ import { MyCreatorWidget } from "./components/my-creator-widget/MyCreatorWidget"
 
 
 function MyDiagram() {
-  const engine = createEngine();
+  // const engine = createEngine();
+  const engine = createEngine({
+    // Habilita el smart routing en la configuración del engine
+    registerDefaultZoomCanvasAction: false,
+    registerDefaultDeleteItemsAction: false,
+    smartRouting: true,
+  });
   engine.setModel(new DiagramModel());
   engine.getNodeFactories().registerFactory(new NodesFactory());
   engine.getLinkFactories().registerFactory(new LinkFactory());
