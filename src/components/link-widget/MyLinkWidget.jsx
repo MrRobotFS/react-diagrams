@@ -1,8 +1,31 @@
 import React from 'react';
-import { DefaultLinkWidget } from '@projectstorm/react-diagrams';
-//import "./my-link-widget.css"
+import { DefaultLinkWidget, PointModel, DefaultLinkModel } from '@projectstorm/react-diagrams';
+
+class DraggableLinkModel extends DefaultLinkModel {
+  constructor() {
+    super({
+      type: 'draggable',
+    });
+    this.dragging = false;
+    this.initialPoint = null;
+    this.ref = React.createRef();
+  }
+
+  setInitialPoint(x, y) {
+    if (!this.initialPoint) {
+      this.initialPoint = new PointModel({ link: this, position: { x, y } });
+    } else {
+      this.initialPoint.setPosition(x, y);
+    }
+  }
+
+  clearInitialPoint() {
+    this.initialPoint = null;
+  }
+}
 
 export class MyLinkWidget extends DefaultLinkWidget {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -10,30 +33,69 @@ export class MyLinkWidget extends DefaultLinkWidget {
       isHoveringLink: false,
       isDraggingArrowhead: false,
     };
+    this.ref = React.createRef(); // Asegúrate de tener esta línea
   }
 
-  handleArrowheadMouseEnter = () => {
-    this.setState({ isHoveringArrowhead: true });
-  };
 
-  handleArrowheadMouseLeave = () => {
-    this.setState({ isHoveringArrowhead: false });
-  };
+  onLinkStartDrag = (event) => {
+    const model = this.props.link;
 
-  handleArrowheadMouseDown = (event) => {
-    event.stopPropagation();
-    this.setState({ isDraggingArrowhead: true });
-  };
+  // Comprobar si el modelo tiene el método setInitialPoint
+  if (typeof model.setInitialPoint === "function") {
+    this.setState({
+      initialX: event.clientX,
+      initialY: event.clientY,
+    });
+    model.setInitialPoint(event.clientX, event.clientY);
+    model.dragging = true;
+    document.addEventListener('mousemove', this.onLinkDrag);
+    document.addEventListener('mouseup', this.onLinkStopDrag);
+  } else {
+    console.error("El modelo no soporta setInitialPoint");
+  }
+  }
 
-  handleMouseUp = (event) => {
-    if (this.state.isDraggingArrowhead) {
-      this.setState({ isDraggingArrowhead: false });
+
+  onLinkDrag = (event) => {
+    if (!this.props.link.dragging) return;
+
+    const model = this.props.link;
+    const dx = event.clientX - this.state.initialX;
+    const dy = event.clientY - this.state.initialY;
+
+    model.getPoints().forEach((point) => {
+      const { x, y } = point.getPosition();
+      point.setPosition(x + dx, y + dy);
+    });
+
+    this.setState({
+      initialX: event.clientX,
+      initialY: event.clientY,
+    });
+
+    this.forceUpdate();
+  }
+
+  onLinkStopDrag = (event) => {
+    const model = this.props.link;
+    model.dragging = false;
+    model.clearInitialPoint();
+    document.removeEventListener('mousemove', this.onLinkDrag);
+    document.removeEventListener('mouseup', this.onLinkStopDrag);
+  }
+
+  componentDidMount() {
+    if (this.ref.current) {
+      this.ref.current.addEventListener('mousedown', this.onLinkStartDrag);
     }
-  };
+  }
 
-  handleArrowheadClick = () => {
-    console.log('Arrowhead was clicked!');
-  };
+  componentWillUnmount() {
+    if (this.ref.current) {
+      this.ref.current.removeEventListener('mousedown', this.onLinkStartDrag);
+    }
+  }
+
 
   generateLinkSegment(model, selected, path) {
     const points = model.getPoints();
@@ -60,13 +122,13 @@ export class MyLinkWidget extends DefaultLinkWidget {
       x: arrowBaseStart.x + arrowWidth * Math.cos(angle - Math.PI / 2),
       y: arrowBaseStart.y + arrowWidth * Math.sin(angle - Math.PI / 2),
     };
-    
+
     const linkPath = `M ${startPoint.getX()} ${startPoint.getY()} L ${arrowBaseStart.x} ${arrowBaseStart.y}`;
 
     const arrowheadPath = `M ${arrowBaseLeft.x} ${arrowBaseLeft.y} 
                           L ${endPoint.getX()} ${endPoint.getY()} 
                           L ${arrowBaseRight.x} ${arrowBaseRight.y} 
-                          Z`; // Usamos Z para cerrar el path y rellenarlo
+                          Z`;
 
 
     const clickableAreaSize = 20;
@@ -79,31 +141,33 @@ export class MyLinkWidget extends DefaultLinkWidget {
         cy={centerY}
         r={clickableAreaSize}
         fill="rgba(255, 0, 0, 0.0)"
-        onClick={this.handleArrowheadClick}
-        onMouseEnter={this.handleArrowheadMouseEnter}
-        onMouseLeave={this.handleArrowheadMouseLeave}
       />
     );
 
     return (
       <>
         <path
-        className={selected ? "link-path-selected" : "link-path"}
-        d={linkPath}
-        stroke="green"
-        strokeWidth={2}
-        fill="none"
-      />
-      <path
-        onClick={this.handleArrowheadClick} // Asegúrate de que este evento se coloque correctamente
-        onMouseEnter={this.handleArrowheadMouseEnter}
-        onMouseLeave={this.handleArrowheadMouseLeave}
-        className={selected ? "link-path-selected" : "link-path"}
-        d={arrowheadPath}
-        stroke={this.state.isHoveringArrowhead ? "blue" : "green"}
-        strokeWidth={2}
-        fill="green" // El arrowhead ya está rellenado y debería ser suficientemente visible para capturar clicks
-      />
+          className={selected ? "link-path-selected" : "link-path"}
+          d={linkPath}
+          stroke="gray"
+          strokeWidth={3}
+          fill="none"
+        />
+        <path
+          className={selected ? "link-path-selected" : "link-path"}
+          d={arrowheadPath}
+          stroke={this.state.isHoveringArrowhead ? "blue" : "green"}
+          strokeWidth={2}
+          fill="green"
+        />
+        <circle
+          cx={centerX}
+          cy={centerY}
+          r={clickableAreaSize}
+          fill="rgba(255, 0, 0, 0.0)"
+          style={{ pointerEvents: 'all' }}
+        />
+
         {clickableArea}
       </>
     );
@@ -114,10 +178,8 @@ export class MyLinkWidget extends DefaultLinkWidget {
     const path = `M ${link.getFirstPoint().getX()} ${link.getFirstPoint().getY()} L ${link.getLastPoint().getX()} ${link.getLastPoint().getY()}`;
     return (
       <>
-        <g className="link-layer"
-          onMouseMove={this.handleMouseMove}
-          onMouseUp={this.handleMouseUp}>
-          {this.generateLinkSegment(link, link.isSelected(), path)}
+        <g className="link-layer" ref={this.ref}>
+          {this.generateLinkSegment(this.props.link, this.props.link.isSelected(), path)}
         </g>
       </>
     );

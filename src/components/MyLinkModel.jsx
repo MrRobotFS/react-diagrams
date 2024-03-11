@@ -1,4 +1,4 @@
-import { DefaultLinkModel } from "@projectstorm/react-diagrams";
+import { DefaultLinkModel, PointModel } from "@projectstorm/react-diagrams";
 
 export class MyLinkModel extends DefaultLinkModel {
     constructor(options = {}) {
@@ -8,6 +8,20 @@ export class MyLinkModel extends DefaultLinkModel {
             color: '#00FF00',
             lineColor: "#00FF00",
         });
+        this.dragging = false;
+        this.initialPoint = null;
+    }
+
+    setInitialPoint(x, y) {
+        if (!this.initialPoint) {
+            this.initialPoint = new PointModel({ link: this, position: { x, y } });
+        } else {
+            this.initialPoint.setPosition(x, y);
+        }
+    }
+
+    clearInitialPoint() {
+        this.initialPoint = null;
     }
 
     getPath() {
