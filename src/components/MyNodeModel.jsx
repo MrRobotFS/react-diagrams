@@ -11,6 +11,7 @@ export class MyNodeModel extends NodeModel {
 
     this.color = options.color || "black";
     this.name = options.name || "Unknown";
+    this.customText = options.customText || "";
 
     if (options) {
       this.color = options.color || "black";
@@ -77,6 +78,10 @@ export class MyNodeModel extends NodeModel {
     if (!this.locked) {
       super.setPosition(x, y);
     }
+  }
+
+  setCustomText(text) {
+    this.customText = text;
   }
 
 }

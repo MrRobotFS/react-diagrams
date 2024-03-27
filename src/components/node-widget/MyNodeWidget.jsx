@@ -113,15 +113,19 @@ useEffect(() => {
   // }, [props.node]);
 
   const handleEditText = () => {
-    if (props.node.name === "input_text") {
-      const newText = prompt("Introduce el texto para el nodo:", props.node.customText || "");
-      props.node.customText = newText;
-      setCustomText(newText);
-    } else {
-      const newText = prompt("Introduce el texto adicional para el nodo:", customText);
+    const newText = prompt("Introduce el texto para el nodo:", props.node.customText || "");
+    if (newText !== null) {
+      props.node.setCustomText(newText);
       setCustomText(newText);
     }
   };
+  
+  useEffect(() => {
+    if (props.node.customText) {
+      setCustomText(props.node.customText);
+    }
+  }, [props.node]);
+  
 
   const handleTextClick = () => {
     if (!isEditing) {
